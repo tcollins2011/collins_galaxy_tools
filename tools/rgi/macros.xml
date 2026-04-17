@@ -68,14 +68,6 @@
                                help="card_database_v*_all.fasta, created with rgi card_annotation. Required when using --include_other_models."/>
                     </when>
                 </conditional>
-                <param name="card_version"
-                       type="text"
-                       value=""
-                       optional="true"
-                       label="CARD version string"
-                       help="Version of the CARD data being loaded, e.g. 3.2.9.">
-                    <validator type="regex" message="Version should be digits and dots only, e.g. 3.2.9">[0-9.]*</validator>
-                </param>
             </when>
         </conditional>
     </xml>
@@ -161,7 +153,6 @@
             #set $card_json_path = str($card_source.cached_card.fields.card_json)
             #set $card_annotation = str($card_source.cached_card.fields.card_annotation)
             #set $card_annotation_all_models = str($card_source.cached_card.fields.card_annotation_all_models)
-            #set $card_version = str($card_source.cached_card.fields.card_version)
             #set $annotation_model = str($card_source.annotation_model)
         #else
             #set $card_json_path = str($card_source.card_json)
@@ -181,7 +172,6 @@
                     #set $card_annotation_all_models = ""
                 #end if
             #end if
-            #set $card_version = str($card_source.card_version).strip()
         #end if
         -i '$card_json_path'
         #if str($annotation_model) == "homolog"
@@ -192,9 +182,6 @@
             #if $card_annotation_all_models.strip()
                 --card_annotation_all_models '$card_annotation_all_models'
             #end if
-        #end if
-        #if $card_version.strip()
-            --card_version '$card_version'
         #end if
     ]]></token>
 

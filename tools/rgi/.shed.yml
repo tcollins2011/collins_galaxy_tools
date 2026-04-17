@@ -10,7 +10,7 @@ long_description: |
   alignment to CARD). Supports pre-installed CARD databases with optional
   WildCARD variant annotations, as well as user-supplied card.json files.
 name: rgi
-owner: tcollins2011
+owner: tcollins
 homepage_url: https://github.com/arpcard/rgi
 remote_repository_url: https://github.com/tcollins2011/collins_galaxy_tools/tree/main/tools/rgi
 type: unrestricted

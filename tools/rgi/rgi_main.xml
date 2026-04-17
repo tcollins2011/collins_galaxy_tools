@@ -204,7 +204,7 @@
             </output>
             <output name="output_json">
                 <assert_contents>
-                    <has_size min="10"/>
+                    <has_text text="ORF_ID"/>
                 </assert_contents>
             </output>
         </test>

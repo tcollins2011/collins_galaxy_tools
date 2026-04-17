@@ -15,7 +15,7 @@
         <file path="tool-data/rgi_card.loc"/>
     </table>
 
-    <!-- WildCARD variant database table — used only by rgi bwt (optional).
+    <!-- WildCARD variant database table — used by both rgi main and rgi bwt (optional).
          Columns:
            value                          - unique identifier for this entry
            name                           - human-readable label shown in the Galaxy UI
