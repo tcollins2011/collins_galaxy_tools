@@ -1,0 +1,24 @@
+# WildCARD variant database location file for the RGI Galaxy tool wrapper.
+#
+# Columns are tab-separated (6 total):
+#   value                          unique identifier for this entry (no spaces)
+#   name                           human-readable label shown to Galaxy users
+#   wildcard_annotation            absolute path to wildcard_database_v*.fasta (homolog models only)
+#   wildcard_annotation_all_models absolute path to wildcard_database_v*_all.fasta (all model types)
+#   wildcard_index                 absolute path to index-for-model-sequences.txt
+#   wildcard_version               version string of the wildcard data, e.g. 4.0.0
+#
+# Generate WildCARD annotation FASTAs with:
+#   curl -L https://card.mcmaster.ca/latest/variants -o wildcard-data.tar.bz2
+#   mkdir wildcard && tar xjf wildcard-data.tar.bz2 -C wildcard/
+#   rgi wildcard_annotation --input_directory wildcard/ --version 4.0.0 --card_json card.json
+#   -> produces wildcard_database_v4.0.0.fasta  (homolog models only)
+#              wildcard_database_v4.0.0_all.fasta  (all model types)
+#              index-for-model-sequences.txt
+#
+# This table is used only by rgi bwt. Select a WildCARD entry to enable
+# --include_wildcard alignment. Use wildcard_annotation_all_models when also
+# using --include_other_models.
+#
+# Example entries (uncomment and edit paths):
+#wildcard_4_0_0	WildCARD 4.0.0	/data/card/wildcard/wildcard_database_v4.0.0.fasta	/data/card/wildcard/wildcard_database_v4.0.0_all.fasta	/data/card/wildcard/index-for-model-sequences.txt	4.0.0

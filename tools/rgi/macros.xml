@@ -1,0 +1,259 @@
+<macros>
+    <token name="@TOOL_VERSION@">6.0.5</token>
+    <token name="@VERSION_SUFFIX@">0</token>
+    <token name="@PROFILE@">25.0</token>
+
+    <xml name="requirements">
+        <requirements>
+            <requirement type="package" version="@TOOL_VERSION@">rgi</requirement>
+        </requirements>
+    </xml>
+
+    <!-- CARD database source — used by both rgi main and rgi bwt -->
+    <xml name="card_source_param">
+        <conditional name="card_source">
+            <param name="source"
+                   type="select"
+                   label="CARD database source">
+                <option value="cached" selected="true">Use a database installed by the administrator</option>
+                <option value="history">Use files from your history</option>
+            </param>
+            <when value="cached">
+                <param name="cached_card"
+                       type="select"
+                       label="CARD database"
+                       help="Select a pre-installed CARD release. Contact your Galaxy administrator if none are listed.">
+                    <options from_data_table="rgi_card">
+                        <filter type="sort_by" column="1"/>
+                        <validator type="no_options"
+                                   message="No CARD databases are installed. Ask your administrator to install one, or supply files from your history."/>
+                    </options>
+                </param>
+                <param name="annotation_model"
+                       type="select"
+                       label="Annotation model type"
+                       help="Controls which annotation FASTA is passed to rgi load. 'Homolog models only' is sufficient for standard AMR gene identification. 'All model types' loads the extended annotation database covering protein variant, rRNA variant, knockout, and overexpression models — required when using Include other model types.">
+                    <option value="homolog" selected="true">Homolog models only</option>
+                    <option value="all">All model types</option>
+                </param>
+            </when>
+            <when value="history">
+                <param name="card_json"
+                       type="data"
+                       format="json"
+                       label="card.json"
+                       help="The card.json file downloaded from https://card.mcmaster.ca/download."/>
+                <conditional name="card_annot">
+                    <param name="annotation_model"
+                           type="select"
+                           label="Annotation model type"
+                           help="Controls which annotation FASTA is passed to rgi load. 'Homolog models only' is sufficient for standard AMR gene identification. 'All model types' loads the extended annotation database covering protein variant, rRNA variant, knockout, and overexpression models — required when using Include other model types.">
+                        <option value="homolog" selected="true">Homolog models only</option>
+                        <option value="all">All model types</option>
+                    </param>
+                    <when value="homolog">
+                        <param name="card_annotation"
+                               type="data"
+                               format="fasta,fasta.gz"
+                               optional="true"
+                               label="CARD annotation FASTA — homolog models"
+                               help="card_database_v*.fasta, created with rgi card_annotation. Required for rgi bwt alignment and when using Include wildcard variants."/>
+                    </when>
+                    <when value="all">
+                        <param name="card_annotation_all_models"
+                               type="data"
+                               format="fasta,fasta.gz"
+                               optional="true"
+                               label="CARD annotation FASTA — all models"
+                               help="card_database_v*_all.fasta, created with rgi card_annotation. Required when using --include_other_models."/>
+                    </when>
+                </conditional>
+                <param name="card_version"
+                       type="text"
+                       value=""
+                       optional="true"
+                       label="CARD version string"
+                       help="Version of the CARD data being loaded, e.g. 3.2.9.">
+                    <validator type="regex" message="Version should be digits and dots only, e.g. 3.2.9">[0-9.]*</validator>
+                </param>
+            </when>
+        </conditional>
+    </xml>
+
+    <!-- WildCARD variant database source — used by both rgi main and rgi bwt -->
+    <xml name="wildcard_source_param">
+        <conditional name="wildcard_source">
+            <param name="source"
+                   type="select"
+                   label="WildCARD variant database">
+                <option value="none" selected="true">Do not load WildCARD</option>
+                <option value="cached">Use a database installed by the administrator</option>
+                <option value="history">Use files from your history</option>
+            </param>
+            <when value="none"/>
+            <when value="cached">
+                <param name="cached_wildcard"
+                       type="select"
+                       label="WildCARD database"
+                       help="Select a pre-installed WildCARD release. Contact your Galaxy administrator if none are listed.">
+                    <options from_data_table="rgi_wildcard">
+                        <filter type="sort_by" column="1"/>
+                        <validator type="no_options"
+                                   message="No WildCARD databases are installed. Ask your administrator to install one, or supply files from your history."/>
+                    </options>
+                </param>
+                <param name="wildcard_annotation_model"
+                       type="select"
+                       label="WildCARD annotation model type"
+                       help="Controls which WildCARD annotation FASTA is passed to rgi load. 'Homolog models only' is sufficient for standard variant detection. 'All model types' loads the extended WildCARD annotation database — required when using Include other model types.">
+                    <option value="homolog" selected="true">Homolog models only</option>
+                    <option value="all">All model types</option>
+                </param>
+            </when>
+            <when value="history">
+                <conditional name="wildcard_annot">
+                    <param name="wildcard_annotation_model"
+                           type="select"
+                           label="WildCARD annotation model type"
+                           help="Controls which WildCARD annotation FASTA is passed to rgi load. 'Homolog models only' is sufficient for standard variant detection. 'All model types' loads the extended WildCARD annotation database — required when using Include other model types.">
+                        <option value="homolog" selected="true">Homolog models only</option>
+                        <option value="all">All model types</option>
+                    </param>
+                    <when value="homolog">
+                        <param name="wildcard_annotation"
+                               type="data"
+                               format="fasta,fasta.gz"
+                               optional="true"
+                               label="WildCARD annotation FASTA — homolog models"
+                               help="wildcard_database_v*.fasta, created with rgi wildcard_annotation. Required to use Include wildcard variants."/>
+                    </when>
+                    <when value="all">
+                        <param name="wildcard_annotation_all_models"
+                               type="data"
+                               format="fasta,fasta.gz"
+                               optional="true"
+                               label="WildCARD annotation FASTA — all models"
+                               help="wildcard_database_v*_all.fasta, created with rgi wildcard_annotation. Required when combining Include wildcard variants with Include other model types."/>
+                    </when>
+                </conditional>
+                <param name="wildcard_index"
+                       type="data"
+                       format="txt,tabular"
+                       optional="true"
+                       label="WildCARD index file"
+                       help="index-for-model-sequences.txt from the WildCARD download."/>
+                <param name="wildcard_version"
+                       type="text"
+                       value=""
+                       optional="true"
+                       label="WildCARD version string"
+                       help="Version of the WildCARD data being loaded, e.g. 4.0.0.">
+                    <validator type="regex" message="Version should be digits and dots only, e.g. 4.0.0">[0-9.]*</validator>
+                </param>
+            </when>
+        </conditional>
+    </xml>
+
+    <!-- CARD load args fragment — resolves card source and emits rgi load flag arguments.
+         Used inside a rgi load call in the tool command block. -->
+    <token name="@CMD_CARD_LOAD_ARGS@"><![CDATA[
+        #if str($card_source.source) == "cached"
+            #set $card_json_path = str($card_source.cached_card.fields.card_json)
+            #set $card_annotation = str($card_source.cached_card.fields.card_annotation)
+            #set $card_annotation_all_models = str($card_source.cached_card.fields.card_annotation_all_models)
+            #set $card_version = str($card_source.cached_card.fields.card_version)
+            #set $annotation_model = str($card_source.annotation_model)
+        #else
+            #set $card_json_path = str($card_source.card_json)
+            #set $annotation_model = str($card_source.card_annot.annotation_model)
+            #if str($annotation_model) == "homolog"
+                #if $card_source.card_annot.card_annotation
+                    #set $card_annotation = str($card_source.card_annot.card_annotation)
+                #else
+                    #set $card_annotation = ""
+                #end if
+                #set $card_annotation_all_models = ""
+            #else
+                #set $card_annotation = ""
+                #if $card_source.card_annot.card_annotation_all_models
+                    #set $card_annotation_all_models = str($card_source.card_annot.card_annotation_all_models)
+                #else
+                    #set $card_annotation_all_models = ""
+                #end if
+            #end if
+            #set $card_version = str($card_source.card_version).strip()
+        #end if
+        -i '$card_json_path'
+        #if str($annotation_model) == "homolog"
+            #if $card_annotation.strip()
+                --card_annotation '$card_annotation'
+            #end if
+        #else
+            #if $card_annotation_all_models.strip()
+                --card_annotation_all_models '$card_annotation_all_models'
+            #end if
+        #end if
+        #if $card_version.strip()
+            --card_version '$card_version'
+        #end if
+    ]]></token>
+
+    <!-- WildCARD load args fragment — resolves wildcard source and emits rgi load flag arguments.
+         Emits nothing when wildcard_source.source == "none".
+         Used in both rgi main and rgi bwt command blocks alongside @CMD_CARD_LOAD_ARGS@. -->
+    <token name="@CMD_WILDCARD_LOAD_ARGS@"><![CDATA[
+        #if str($wildcard_source.source) == "cached"
+            #set $wc_model = str($wildcard_source.wildcard_annotation_model)
+            #set $wc_annotation = str($wildcard_source.cached_wildcard.fields.wildcard_annotation)
+            #set $wc_annotation_all = str($wildcard_source.cached_wildcard.fields.wildcard_annotation_all_models)
+            #set $wc_index = str($wildcard_source.cached_wildcard.fields.wildcard_index)
+            #set $wc_version = str($wildcard_source.cached_wildcard.fields.wildcard_version)
+        #elif str($wildcard_source.source) == "history"
+            #set $wc_model = str($wildcard_source.wildcard_annot.wildcard_annotation_model)
+            #if str($wc_model) == "homolog"
+                #if $wildcard_source.wildcard_annot.wildcard_annotation
+                    #set $wc_annotation = str($wildcard_source.wildcard_annot.wildcard_annotation)
+                #else
+                    #set $wc_annotation = ""
+                #end if
+                #set $wc_annotation_all = ""
+            #else
+                #set $wc_annotation = ""
+                #if $wildcard_source.wildcard_annot.wildcard_annotation_all_models
+                    #set $wc_annotation_all = str($wildcard_source.wildcard_annot.wildcard_annotation_all_models)
+                #else
+                    #set $wc_annotation_all = ""
+                #end if
+            #end if
+            #if $wildcard_source.wildcard_index
+                #set $wc_index = str($wildcard_source.wildcard_index)
+            #else
+                #set $wc_index = ""
+            #end if
+            #set $wc_version = str($wildcard_source.wildcard_version).strip()
+        #end if
+        #if str($wildcard_source.source) != "none"
+            #if str($wc_model) == "homolog"
+                #if $wc_annotation.strip()
+                    --wildcard_annotation '$wc_annotation'
+                #end if
+            #else
+                #if $wc_annotation_all.strip()
+                    --wildcard_annotation_all_models '$wc_annotation_all'
+                #end if
+            #end if
+            #if $wc_index.strip()
+                --wildcard_index '$wc_index'
+            #end if
+            #if $wc_version.strip()
+                --wildcard_version '$wc_version'
+            #end if
+        #end if
+    ]]></token>
+
+    <xml name="citations">
+        <citations>
+            <citation type="doi">10.1093/nar/gkz935</citation>
+        </citations>
+    </xml>
+</macros>

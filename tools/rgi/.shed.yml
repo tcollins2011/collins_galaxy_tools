@@ -1,0 +1,23 @@
+categories:
+- Sequence Analysis
+- Metagenomics
+description: Resistance Gene Identifier (RGI) — AMR gene detection using CARD
+long_description: |
+  RGI (Resistance Gene Identifier) identifies antimicrobial resistance (AMR)
+  genes and mutations in genomic, protein, or metagenomic sequences using the
+  Comprehensive Antibiotic Resistance Database (CARD). This suite wraps
+  rgi main (contig/protein AMR prediction) and rgi bwt (metagenomic read
+  alignment to CARD). Supports pre-installed CARD databases with optional
+  WildCARD variant annotations, as well as user-supplied card.json files.
+name: rgi
+owner: tcollins2011
+homepage_url: https://github.com/arpcard/rgi
+remote_repository_url: https://github.com/tcollins2011/collins_galaxy_tools/tree/main/tools/rgi
+type: unrestricted
+auto_tool_repositories:
+  name_template: "{{ tool_id }}"
+  description_template: "Wrapper for RGI: {{ tool_name }}."
+suite:
+  name: "suite_rgi"
+  description: "A suite of Galaxy tools for Resistance Gene Identifier (RGI)."
+  type: repository_suite_definition

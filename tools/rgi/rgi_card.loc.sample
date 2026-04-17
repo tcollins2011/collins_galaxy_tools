@@ -1,0 +1,21 @@
+# CARD database location file for the RGI Galaxy tool wrapper.
+#
+# Columns are tab-separated (6 total):
+#   value                      unique identifier for this entry (no spaces)
+#   name                       human-readable label shown to Galaxy users
+#   card_json                  absolute path to the card.json file
+#   card_annotation            absolute path to card_database_v*.fasta (homolog models only; or leave blank)
+#   card_annotation_all_models absolute path to card_database_v*_all.fasta (all model types; or leave blank)
+#   card_version               version string of the CARD data, e.g. 3.2.9
+#
+# Generate annotation FASTAs with:
+#   rgi card_annotation -i card.json
+#   -> produces card_database_v<VERSION>.fasta  (homolog models only)
+#              card_database_v<VERSION>_all.fasta  (all model types)
+#
+# card_annotation and card_annotation_all_models are optional for rgi main
+# without WildCARD, but required for rgi bwt and when using --include_wildcard
+# in either tool.
+#
+# Example entries (uncomment and edit paths):
+#card_3_2_9	CARD 3.2.9	/data/card/3.2.9/card.json	/data/card/3.2.9/card_database_v3.2.9.fasta	/data/card/3.2.9/card_database_v3.2.9_all.fasta	3.2.9

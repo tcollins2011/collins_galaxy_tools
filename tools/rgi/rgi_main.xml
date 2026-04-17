@@ -1,0 +1,346 @@
+<tool id="rgi_main"
+      name="RGI main"
+      version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@"
+      profile="@PROFILE@">
+    <description>identify antimicrobial resistance genes using CARD</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements"/>
+
+    <version_command>rgi --version</version_command>
+
+    <command detect_errors="aggressive"><![CDATA[
+        mkdir -p staging &&
+        rgi load @CMD_CARD_LOAD_ARGS@ @CMD_WILDCARD_LOAD_ARGS@ --local &&
+        rgi main
+            -i '$input_sequence'
+            -o staging/output
+            -t '$input_options.input_type'
+            -a '$alignment_tool'
+            -n \${GALAXY_SLOTS:-4}
+            -d '$data_type'
+            #if str($input_options.input_type) == "contig"
+                -g '$input_options.orf_finder'
+                $input_options.split_prodigal_jobs
+            #end if
+            $hit_inclusion.include_loose
+            $hit_inclusion.include_nudge
+            $hit_inclusion.low_quality
+            $include_wildcard
+            --local
+            --clean
+    ]]></command>
+
+    <inputs>
+        <param argument="-i"
+               name="input_sequence"
+               type="data"
+               format="fasta,fasta.gz"
+               label="Input sequences"
+               help="FASTA or gzip-compressed FASTA file containing contigs or protein sequences."/>
+
+        <expand macro="card_source_param"/>
+        <expand macro="wildcard_source_param"/>
+
+        <conditional name="input_options">
+            <param argument="-t"
+                   name="input_type"
+                   type="select"
+                   label="Input type"
+                   help="Nucleotide contigs require ORF prediction before alignment. Protein sequences are aligned directly, skipping gene prediction.">
+                <option value="contig" selected="true">Contig (nucleotide)</option>
+                <option value="protein">Protein</option>
+            </param>
+            <when value="contig">
+                <param argument="-g"
+                       name="orf_finder"
+                       type="select"
+                       label="ORF finding tool"
+                       help="PRODIGAL is the standard prokaryotic gene predictor. PYRODIGAL is a faster Python reimplementation that produces near-identical predictions.">
+                    <option value="PRODIGAL" selected="true">PRODIGAL</option>
+                    <option value="PYRODIGAL">PYRODIGAL (faster)</option>
+                </param>
+                <param argument="--split_prodigal_jobs"
+                       type="boolean"
+                       truevalue="--split_prodigal_jobs"
+                       falsevalue=""
+                       checked="false"
+                       label="Split Prodigal jobs"
+                       help="Run ORF prediction in parallel, one job per contig. Reduces runtime for assemblies with many contigs when multiple CPU cores are available."/>
+            </when>
+            <when value="protein"/>
+        </conditional>
+
+        <param argument="-a"
+               name="alignment_tool"
+               type="select"
+               label="Alignment tool"
+               help="DIAMOND is 20-100x faster than BLAST with minimal sensitivity loss for typical AMR databases. Use BLAST for small inputs or when maximum sensitivity is required.">
+            <option value="DIAMOND" selected="true">DIAMOND (faster)</option>
+            <option value="BLAST">BLAST (more sensitive)</option>
+        </param>
+
+        <param argument="-d"
+               name="data_type"
+               type="select"
+               label="Sequence data type"
+               help="Genomic origin of the input sequences. Used to annotate results and does not change alignment behaviour. Select the most specific category that applies.">
+            <option value="NA" selected="true">Not specified (NA)</option>
+            <option value="wgs">Whole-genome shotgun (wgs)</option>
+            <option value="plasmid">Plasmid</option>
+            <option value="chromosome">Chromosome</option>
+        </param>
+
+        <param argument="--include_wildcard"
+               type="boolean"
+               truevalue="--include_wildcard"
+               falsevalue=""
+               checked="false"
+               label="Include wildcard variants (WildCARD)"
+               help="Also search against in silico predicted AMR gene variants from the WildCARD database. Requires a WildCARD database to be loaded above and the CARD annotation FASTA to be provided."/>
+
+        <section name="hit_inclusion" title="Hit inclusion options" expanded="false">
+            <param argument="--include_loose"
+                   type="boolean"
+                   truevalue="--include_loose"
+                   falsevalue=""
+                   checked="false"
+                   label="Include loose hits"
+                   help="Report hits that partially satisfy CARD model thresholds (Loose hits). Increases sensitivity but raises the false-positive rate. By default only Perfect and Strict hits are reported."/>
+            <param argument="--include_nudge"
+                   type="boolean"
+                   truevalue="--include_nudge"
+                   falsevalue=""
+                   checked="false"
+                   label="Include nudged hits"
+                   help="Promote qualifying Loose hits to Strict classification based on genomic context (e.g. co-location with other AMR determinants). Only has an effect when loose hits are also enabled."/>
+            <param argument="--low_quality"
+                   type="boolean"
+                   truevalue="--low_quality"
+                   falsevalue=""
+                   checked="false"
+                   label="Low quality / short contigs mode"
+                   help="Relax ORF prediction thresholds to recover partial or truncated genes from fragmented assemblies. Recommended for low-coverage or short-read assemblies."/>
+        </section>
+    </inputs>
+
+    <outputs>
+        <data name="output_txt"
+              format="tabular"
+              from_work_dir="staging/output.txt"
+              label="${tool.name} on ${on_string}: AMR results (tabular)"/>
+        <data name="output_json"
+              format="json"
+              from_work_dir="staging/output.json"
+              label="${tool.name} on ${on_string}: AMR results (JSON)"/>
+    </outputs>
+
+    <tests>
+        <!-- Test 1: contig mode, BLAST, history card.json -->
+        <test expect_num_outputs="2">
+            <param name="input_sequence" value="test_input.fasta"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_json" value="card_minimal.json"/>
+                <conditional name="card_annot">
+                    <param name="annotation_model" value="homolog"/>
+                </conditional>
+            </conditional>
+            <conditional name="wildcard_source">
+                <param name="source" value="none"/>
+            </conditional>
+            <conditional name="input_options">
+                <param name="input_type" value="contig"/>
+                <param name="orf_finder" value="PRODIGAL"/>
+            </conditional>
+            <param name="alignment_tool" value="BLAST"/>
+            <param name="data_type" value="NA"/>
+            <section name="hit_inclusion">
+                <param name="include_loose" value="false"/>
+                <param name="include_nudge" value="false"/>
+                <param name="low_quality" value="false"/>
+            </section>
+            <output name="output_txt">
+                <assert_contents>
+                    <has_text text="ORF_ID"/>
+                    <has_text text="Best_Hit_ARO"/>
+                    <has_text text="APH(3')-VIa"/>
+                </assert_contents>
+            </output>
+            <output name="output_json">
+                <assert_contents>
+                    <has_text text="ORF_ID"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test 2: contig mode, BLAST, include_loose, wgs data type -->
+        <test expect_num_outputs="2">
+            <param name="input_sequence" value="test_input.fasta"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_json" value="card_minimal.json"/>
+                <conditional name="card_annot">
+                    <param name="annotation_model" value="homolog"/>
+                </conditional>
+            </conditional>
+            <conditional name="wildcard_source">
+                <param name="source" value="none"/>
+            </conditional>
+            <conditional name="input_options">
+                <param name="input_type" value="contig"/>
+            </conditional>
+            <param name="alignment_tool" value="BLAST"/>
+            <param name="data_type" value="wgs"/>
+            <section name="hit_inclusion">
+                <param name="include_loose" value="true"/>
+                <param name="include_nudge" value="true"/>
+            </section>
+            <output name="output_txt">
+                <assert_contents>
+                    <has_text text="ORF_ID"/>
+                    <has_text text="Best_Hit_ARO"/>
+                </assert_contents>
+            </output>
+            <output name="output_json">
+                <assert_contents>
+                    <has_size min="10"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test 3: protein mode -->
+        <test expect_num_outputs="2">
+            <param name="input_sequence" value="test_input_protein.fasta"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_json" value="card_minimal.json"/>
+                <conditional name="card_annot">
+                    <param name="annotation_model" value="homolog"/>
+                </conditional>
+            </conditional>
+            <conditional name="wildcard_source">
+                <param name="source" value="none"/>
+            </conditional>
+            <conditional name="input_options">
+                <param name="input_type" value="protein"/>
+            </conditional>
+            <param name="alignment_tool" value="BLAST"/>
+            <param name="data_type" value="NA"/>
+            <output name="output_txt">
+                <assert_contents>
+                    <has_text text="ORF_ID"/>
+                    <has_text text="NDM-1"/>
+                </assert_contents>
+            </output>
+            <output name="output_json">
+                <assert_contents>
+                    <has_text text="NDM-1"/>
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+
+    <help><![CDATA[
+**RGI main — Resistance Gene Identifier**
+
+Identifies antimicrobial resistance (AMR) genes and mutations in genomic or
+protein sequences by aligning them against the Comprehensive Antibiotic
+Resistance Database (CARD).
+
+-----
+
+**Inputs**
+
+- **Input sequences** — FASTA file of nucleotide contigs or translated protein
+  sequences. gzip-compressed FASTA is accepted.
+- **CARD database** — Select a pre-installed CARD release (provided by your
+  Galaxy administrator) or supply files from your history. Download the latest
+  release from https://card.mcmaster.ca/download.
+- **Annotation model type** — Controls which annotation FASTA is loaded.
+  *Homolog models only* is sufficient for standard AMR gene identification.
+  *All model types* loads the extended annotation database.
+- **WildCARD database** — Optional. Provide to enable detection of predicted
+  AMR gene variants not yet in canonical CARD (see WildCARD section below).
+
+-----
+
+**Input type**
+
+- *Contig* (default) — nucleotide sequences. RGI calls PRODIGAL or PYRODIGAL
+  to predict open reading frames before alignment. ORF finder and parallelism
+  options appear when this type is selected.
+- *Protein* — translated amino acid sequences. ORF prediction is skipped and
+  sequences are aligned directly against CARD protein models.
+
+-----
+
+**Alignment tool**
+
+- *DIAMOND* (default) — 20–100× faster than BLAST with minimal sensitivity
+  loss. Recommended for assemblies with hundreds or thousands of contigs.
+- *BLAST* — more sensitive; use for small inputs or when every potential hit
+  matters.
+
+-----
+
+**Sequence data type**
+
+Labels results with the genomic origin of the input. Does not change alignment
+behaviour. Select the most specific option that applies:
+
+- *Not specified (NA)* — use when the source is unknown or mixed.
+- *Whole-genome shotgun* — short-read WGS assemblies.
+- *Plasmid* — sequences known to be plasmid-derived.
+- *Chromosome* — complete or draft chromosomal assemblies.
+
+-----
+
+**WildCARD variants**
+
+Enable *Include wildcard variants* to also search in silico predicted allelic
+variants from the WildCARD database. WildCARD captures resistance gene
+diversity not yet represented in canonical CARD, improving detection of novel
+or divergent variants. Requires a WildCARD database to be loaded above and the
+CARD annotation FASTA to be provided.
+
+-----
+
+**Hit inclusion options**
+
+By default RGI reports only **Perfect** and **Strict** hits, which fully satisfy
+curated CARD model thresholds.
+
+- *Include loose hits* — also reports Loose hits that partially satisfy
+  thresholds. Increases sensitivity but raises the false-positive rate. Use for
+  exploratory analysis or when screening for distant homologs.
+- *Include nudged hits* — promotes qualifying Loose hits to Strict based on
+  genomic context (e.g. co-location with other AMR determinants). Only has an
+  effect when loose hits are also enabled.
+- *Low quality / short contigs mode* — relaxes ORF prediction thresholds to
+  recover partial or truncated genes from fragmented assemblies. Recommended
+  for low-coverage or highly fragmented short-read assemblies.
+
+-----
+
+**Outputs**
+
+- **AMR results (tabular)** — tab-delimited table of all detected AMR
+  determinants, including ORF coordinates, CARD ARO accession, best-hit
+  identity and coverage, drug class, resistance mechanism, and
+  Perfect/Strict/Loose classification.
+- **AMR results (JSON)** — full output in JSON format, compatible with the CARD
+  Resistome Gene Identifier web viewer and downstream parsing tools.
+
+-----
+
+**References**
+
+Alcock et al. (2020). CARD 2020: antibiotic resistome surveillance with the
+Comprehensive Antibiotic Resistance Database. *Nucleic Acids Research*, 48(D1),
+D517–D525. https://doi.org/10.1093/nar/gkz935
+
+RGI GitHub: https://github.com/arpcard/rgi
+    ]]></help>
+
+    <expand macro="citations"/>
+</tool>

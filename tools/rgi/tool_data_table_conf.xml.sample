@@ -1,0 +1,33 @@
+<tables>
+    <!-- CARD database table — used by both rgi main and rgi bwt.
+         Columns:
+           value                      - unique identifier for this entry
+           name                       - human-readable label shown in the Galaxy UI
+           card_json                  - absolute path to card.json
+           card_annotation            - absolute path to card_database_v*.fasta (homolog models only,
+                                        created with: rgi card_annotation -i card.json)
+           card_annotation_all_models - absolute path to card_database_v*_all.fasta (all model types,
+                                        created with: rgi card_annotation -i card.json)
+           card_version               - version string of the CARD data, e.g. 3.2.9
+    -->
+    <table name="rgi_card" comment_char="#">
+        <columns>value, name, card_json, card_annotation, card_annotation_all_models, card_version</columns>
+        <file path="tool-data/rgi_card.loc"/>
+    </table>
+
+    <!-- WildCARD variant database table — used only by rgi bwt (optional).
+         Columns:
+           value                          - unique identifier for this entry
+           name                           - human-readable label shown in the Galaxy UI
+           wildcard_annotation            - absolute path to wildcard_database_v*.fasta (homolog models only,
+                                            created with: rgi wildcard_annotation ...)
+           wildcard_annotation_all_models - absolute path to wildcard_database_v*_all.fasta (all model types,
+                                            created with: rgi wildcard_annotation ...)
+           wildcard_index                 - absolute path to index-for-model-sequences.txt
+           wildcard_version               - version string of the wildcard data, e.g. 4.0.0
+    -->
+    <table name="rgi_wildcard" comment_char="#">
+        <columns>value, name, wildcard_annotation, wildcard_annotation_all_models, wildcard_index, wildcard_version</columns>
+        <file path="tool-data/rgi_wildcard.loc"/>
+    </table>
+</tables>
