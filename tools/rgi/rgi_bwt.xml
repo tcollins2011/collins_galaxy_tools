@@ -23,7 +23,6 @@
             -o staging/output
             $include_wildcard
             $include_other_models
-            $include_baits
             #if str($read_filters.mapq).strip()
                 --mapq $read_filters.mapq
             #end if
@@ -79,13 +78,6 @@
                checked="false"
                label="Include other model types"
                help="Also align against protein variant, rRNA variant, knockout, and protein overexpression models in addition to the default homolog models. Requires the 'All model types' annotation FASTA to be loaded for CARD (and WildCARD if enabled)."/>
-        <param argument="--include_baits"
-               type="boolean"
-               truevalue="--include_baits"
-               falsevalue=""
-               checked="false"
-               label="Include baits (experimental)"
-               help="Align reads against bait sequences in addition to the AMR reference. This is an experimental feature; results should be interpreted with caution."/>
 
         <section name="read_filters" title="Read mapping filters" expanded="false">
             <param argument="--mapq"
@@ -155,7 +147,6 @@
             <param name="aligner" value="kma"/>
             <param name="include_wildcard" value="false"/>
             <param name="include_other_models" value="false"/>
-            <param name="include_baits" value="false"/>
             <output name="allele_mapping_txt">
                 <assert_contents>
                     <has_text text="Reference Sequence"/>
