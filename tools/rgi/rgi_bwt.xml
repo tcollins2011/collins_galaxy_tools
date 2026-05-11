@@ -8,8 +8,6 @@
     </macros>
     <expand macro="requirements"/>
 
-    <version_command>rgi --version</version_command>
-
     <command detect_errors="aggressive"><![CDATA[
         mkdir -p staging &&
         rgi load @CMD_CARD_LOAD_ARGS@ @CMD_WILDCARD_LOAD_ARGS@ --local &&
@@ -139,6 +137,7 @@
                 <param name="card_json" value="card_minimal.json"/>
                 <conditional name="card_annot">
                     <param name="annotation_model" value="homolog"/>
+                    <param name="card_annotation" value="card_annotation_homolog.fasta"/>
                 </conditional>
             </conditional>
             <conditional name="wildcard_source">
@@ -173,6 +172,7 @@
                 <param name="card_json" value="card_minimal.json"/>
                 <conditional name="card_annot">
                     <param name="annotation_model" value="homolog"/>
+                    <param name="card_annotation" value="card_annotation_homolog.fasta"/>
                 </conditional>
             </conditional>
             <conditional name="wildcard_source">

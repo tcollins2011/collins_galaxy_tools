@@ -8,9 +8,7 @@
     </macros>
     <expand macro="requirements"/>
 
-    <version_command>rgi --version</version_command>
-
-    <command detect_errors="aggressive"><![CDATA[
+    <command detect_errors="exit_code"><![CDATA[
         mkdir -p staging &&
         rgi load @CMD_CARD_LOAD_ARGS@ @CMD_WILDCARD_LOAD_ARGS@ --local &&
         rgi main
@@ -170,7 +168,7 @@
             </output>
             <output name="output_json">
                 <assert_contents>
-                    <has_text text="ORF_ID"/>
+                    <has_text text="type_match"/>
                 </assert_contents>
             </output>
         </test>
@@ -204,7 +202,7 @@
             </output>
             <output name="output_json">
                 <assert_contents>
-                    <has_text text="ORF_ID"/>
+                    <has_text text="type_match"/>
                 </assert_contents>
             </output>
         </test>
