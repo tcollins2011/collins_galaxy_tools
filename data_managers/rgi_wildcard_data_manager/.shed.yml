@@ -1,0 +1,15 @@
+categories:
+- Data Managers
+description: Data manager to install WildCARD databases for use with RGI tools
+long_description: |
+  Installs a release of the WildCARD predicted AMR gene variant database for
+  use with the RGI Galaxy tools. Downloads card-variants.tar.bz2, decompresses
+  the variant sequences, and runs rgi wildcard_annotation to produce the
+  annotation FASTAs and index file required by RGI main and RGI bwt. No prior
+  CARD installation is required. The installed database is registered in the
+  rgi_wildcard data table.
+name: data_manager_rgi_wildcard
+owner: tcollins
+homepage_url: https://github.com/arpcard/rgi
+remote_repository_url: https://github.com/tcollins2011/collins_galaxy_tools/tree/main/data_managers/rgi_wildcard_data_manager
+type: repository_suite_definition

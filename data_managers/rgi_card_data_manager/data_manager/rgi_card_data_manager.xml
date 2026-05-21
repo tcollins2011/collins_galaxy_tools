@@ -54,4 +54,8 @@ Both the homolog-models-only FASTA (``card_database_v*.fasta``) and the
 all-models FASTA (``card_database_v*_all.fasta``) are stored. Users can
 select the annotation type when running the RGI tools.
     ]]></help>
+
+    <citations>
+        <citation type="doi">10.1093/nar/gkz935</citation>
+    </citations>
 </tool>

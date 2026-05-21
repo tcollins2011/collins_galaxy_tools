@@ -70,4 +70,8 @@ The WildCARD entry will appear in the WildCARD database dropdown in **RGI
 main** and **RGI bwt**. Both the homolog-models-only FASTA and the
 all-models FASTA are stored alongside the index file.
     ]]></help>
+
+    <citations>
+        <citation type="doi">10.1093/nar/gkz935</citation>
+    </citations>
 </tool>
