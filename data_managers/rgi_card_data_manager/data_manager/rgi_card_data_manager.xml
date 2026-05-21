@@ -27,6 +27,18 @@
         <data name="out_file" format="data_manager_json"/>
     </outputs>
 
+    <tests>
+        <test>
+            <param name="card_url" value="https://github.com/tcollins2011/collins_galaxy_tools/raw/main/data_managers/rgi_card_data_manager/test-data/card-data.tar.bz2"/>
+            <output name="out_file">
+                <assert_contents>
+                    <has_text text="rgi_card"/>
+                    <has_text text="card_json"/>
+                </assert_contents>
+            </output>
+        </test>
+    </tests>
+
     <help><![CDATA[
 **RGI: Install CARD database**
 
