@@ -1,0 +1,83 @@
+<tool id="rgi_wildcard_data_manager"
+      name="RGI: Install WildCARD database"
+      version="6.0.5+galaxy0"
+      tool_type="manage_data"
+      profile="25.0">
+    <description>download and index a WildCARD release for use with RGI tools</description>
+    <requirements>
+        <requirement type="package" version="6.0.5">rgi</requirement>
+    </requirements>
+
+    <command detect_errors="exit_code"><![CDATA[
+        python '$__tool_directory__/rgi_wildcard_data_manager.py'
+            --out '$out_file'
+            --url '$wildcard_url'
+            --version '$wildcard_version'
+            --card-json '$card_db.fields.card_json'
+            --data-path '$__data_manager_data_path__'
+    ]]></command>
+
+    <inputs>
+        <param name="card_db"
+               type="select"
+               label="CARD database"
+               help="Select the installed CARD release that matches this WildCARD data. The rgi wildcard_annotation step requires the corresponding card.json.">
+            <options from_data_table="rgi_card">
+                <filter type="sort_by" column="1"/>
+                <validator type="no_options"
+                           message="No CARD databases are installed. Run 'RGI: Install CARD database' first."/>
+            </options>
+        </param>
+        <param name="wildcard_url"
+               type="text"
+               value="https://card.mcmaster.ca/latest/variants"
+               label="WildCARD download URL"
+               help="URL to the WildCARD data archive (card-variants.tar.bz2). The default fetches the latest release."/>
+        <param name="wildcard_version"
+               type="text"
+               value=""
+               label="WildCARD version string"
+               help="Version of the WildCARD data, e.g. 4.0.0. Check the WildCARD release page for the version that corresponds to the archive you are downloading.">
+            <validator type="regex"
+                       message="Version must be digits and dots only, e.g. 4.0.0">[0-9]+\.[0-9]+\.[0-9]+</validator>
+        </param>
+    </inputs>
+
+    <outputs>
+        <data name="out_file" format="data_manager_json"/>
+    </outputs>
+
+    <help><![CDATA[
+**RGI: Install WildCARD database**
+
+Downloads a WildCARD (predicted AMR gene variant) release, extracts the
+variant sequences, and runs ``rgi wildcard_annotation`` to generate the
+annotation FASTAs and index file required by the RGI tools. The database
+is registered in the ``rgi_wildcard`` data table so users can select it
+from the WildCARD database dropdown in **RGI main** and **RGI bwt**.
+
+-----
+
+**Prerequisites**
+
+A CARD database must already be installed (run **RGI: Install CARD database**
+first). Select the matching CARD release — ``rgi wildcard_annotation`` needs
+the corresponding ``card.json`` to annotate variant sequences.
+
+-----
+
+**WildCARD version**
+
+The version string (e.g. ``4.0.0``) is not embedded in the download archive.
+Check the WildCARD release notes at https://card.mcmaster.ca/download to
+find the version number for the archive you are installing.
+
+-----
+
+**After installation**
+
+The WildCARD entry will appear in the WildCARD database dropdown in **RGI
+main** and **RGI bwt**. Both the homolog-models-only FASTA and the
+all-models FASTA are stored alongside the index file.
+    ]]></help>
+</tool>

@@ -1,0 +1,13 @@
+<tables>
+    <!-- rgi_card is read by this data manager to resolve card.json path -->
+    <table name="rgi_card" comment_char="#">
+        <columns>value, name, card_json, card_annotation, card_annotation_all_models, card_version</columns>
+        <file path="tool-data/rgi_card.loc"/>
+    </table>
+
+    <!-- rgi_wildcard is written by this data manager -->
+    <table name="rgi_wildcard" comment_char="#">
+        <columns>value, name, wildcard_annotation, wildcard_annotation_all_models, wildcard_index, wildcard_version</columns>
+        <file path="tool-data/rgi_wildcard.loc"/>
+    </table>
+</tables>

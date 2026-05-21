@@ -1,0 +1,57 @@
+<tool id="rgi_card_data_manager"
+      name="RGI: Install CARD database"
+      version="6.0.5+galaxy0"
+      tool_type="manage_data"
+      profile="25.0">
+    <description>download and index a CARD release for use with RGI tools</description>
+    <requirements>
+        <requirement type="package" version="6.0.5">rgi</requirement>
+    </requirements>
+
+    <command detect_errors="exit_code"><![CDATA[
+        python '$__tool_directory__/rgi_card_data_manager.py'
+            --out '$out_file'
+            --url '$card_url'
+            --data-path '$__data_manager_data_path__'
+    ]]></command>
+
+    <inputs>
+        <param name="card_url"
+               type="text"
+               value="https://card.mcmaster.ca/latest/data"
+               label="CARD download URL"
+               help="URL to the CARD data archive (card-data.tar.bz2). The default fetches the latest release. For a specific version use the versioned URL from https://card.mcmaster.ca/download."/>
+    </inputs>
+
+    <outputs>
+        <data name="out_file" format="data_manager_json"/>
+    </outputs>
+
+    <help><![CDATA[
+**RGI: Install CARD database**
+
+Downloads a CARD (Comprehensive Antibiotic Resistance Database) release,
+extracts ``card.json``, and runs ``rgi card_annotation`` to generate the
+annotation FASTAs required by the RGI tools. The database is registered in
+the ``rgi_card`` data table so users can select it from the pre-installed
+database dropdown in **RGI main** and **RGI bwt**.
+
+The CARD version is read automatically from ``card.json`` — no manual version
+entry is required.
+
+-----
+
+**URL format**
+
+- Latest release: ``https://card.mcmaster.ca/latest/data``
+- Specific version: use the download URL from https://card.mcmaster.ca/download
+
+-----
+
+**After installation**
+
+Both the homolog-models-only FASTA (``card_database_v*.fasta``) and the
+all-models FASTA (``card_database_v*_all.fasta``) are stored. Users can
+select the annotation type when running the RGI tools.
+    ]]></help>
+</tool>
