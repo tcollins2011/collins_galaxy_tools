@@ -239,9 +239,12 @@ samples. Optionally extends alignment to predicted allelic variants (WildCARD).
 - **Read 2** — reverse reads for paired-end sequencing (optional). Omit for
   single-end data.
 - **CARD database** — Select a pre-installed CARD release or supply files from
-  your history. Read alignment requires a CARD annotation FASTA in addition to
-  ``card.json``. Select *Homolog models only* for standard analysis, or *All
-  model types* if you also enable **Include other model types**.
+  your history. **A CARD annotation FASTA is always required for RGI bwt** —
+  without it the tool runs but produces empty results. To generate it: download
+  ``card-data.tar.bz2`` from https://card.mcmaster.ca/download, extract
+  ``card.json``, then run ``rgi card_annotation -i card.json``. Select *Homolog
+  models only* for standard analysis, or *All model types* if you also enable
+  **Include other model types**.
 - **WildCARD database** — Optional. Provide to enable alignment against predicted
   AMR gene variants (see WildCARD section below).
 
@@ -265,6 +268,13 @@ predicted allelic variants from the WildCARD database. WildCARD captures
 resistance gene diversity not yet represented in canonical CARD, improving
 detection of novel or divergent variants. Requires a WildCARD database to be
 loaded above.
+
+To prepare WildCARD files for history upload: download ``card-variants.tar.bz2``
+from https://card.mcmaster.ca/download, extract and decompress all ``.gz`` files
+inside the archive, then run
+``rgi wildcard_annotation --input_directory <dir> --version <version> --card_json card.json``.
+You will also need the ``index-for-model-sequences.txt`` file (decompressed from
+the archive) and the version string (e.g. ``4.0.0``) from the WildCARD release notes.
 
 -----
 

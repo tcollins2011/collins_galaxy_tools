@@ -42,7 +42,7 @@
                        type="data"
                        format="json"
                        label="card.json"
-                       help="The card.json file downloaded from https://card.mcmaster.ca/download."/>
+                       help="The card.json file from the CARD database. Download card-data.tar.bz2 from https://card.mcmaster.ca/download and extract card.json from the archive. For RGI main, card.json alone is sufficient for standard AMR gene detection. For RGI bwt, you must also supply an annotation FASTA below."/>
                 <conditional name="card_annot">
                     <param name="annotation_model"
                            type="select"
@@ -57,7 +57,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="CARD annotation FASTA — homolog models"
-                               help="card_database_v*.fasta, created with rgi card_annotation. REQUIRED when using RGI bwt — omitting this causes a silent failure. Also required when using Include wildcard variants."/>
+                               help="card_database_v*.fasta. Generate it by running: rgi card_annotation -i card.json (after extracting card.json from card-data.tar.bz2). REQUIRED when using RGI bwt — omitting this causes a silent failure. Also required when enabling Include wildcard variants in RGI main."/>
                     </when>
                     <when value="all">
                         <param name="card_annotation_all_models"
@@ -65,7 +65,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="CARD annotation FASTA — all models"
-                               help="card_database_v*_all.fasta, created with rgi card_annotation. REQUIRED when using RGI bwt with Include other model types — omitting this causes a silent failure."/>
+                               help="card_database_v*_all.fasta. Generate it by running: rgi card_annotation -i card.json (the same command produces both the homolog-only and all-models FASTAs). REQUIRED when using RGI bwt with Include other model types — omitting this causes a silent failure."/>
                     </when>
                 </conditional>
             </when>
@@ -117,7 +117,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="WildCARD annotation FASTA — homolog models"
-                               help="wildcard_database_v*.fasta, created with rgi wildcard_annotation. Required to use Include wildcard variants."/>
+                               help="wildcard_database_v*.fasta. To prepare: download card-variants.tar.bz2 from https://card.mcmaster.ca/download, extract and decompress all .gz files inside, then run: rgi wildcard_annotation --input_directory DIR --version VERSION --card_json card.json. Required to use Include wildcard variants."/>
                     </when>
                     <when value="all">
                         <param name="wildcard_annotation_all_models"
@@ -125,7 +125,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="WildCARD annotation FASTA — all models"
-                               help="wildcard_database_v*_all.fasta, created with rgi wildcard_annotation. Required when combining Include wildcard variants with Include other model types."/>
+                               help="wildcard_database_v*_all.fasta. To prepare: download card-variants.tar.bz2 from https://card.mcmaster.ca/download, extract and decompress all .gz files inside, then run: rgi wildcard_annotation --input_directory DIR --version VERSION --card_json card.json. Both FASTAs (homolog-only and all-models) are produced by the same command. Required when combining Include wildcard variants with Include other model types."/>
                     </when>
                 </conditional>
                 <param name="wildcard_index"
@@ -133,13 +133,13 @@
                        format="txt,tabular"
                        optional="true"
                        label="WildCARD index file"
-                       help="index-for-model-sequences.txt from the WildCARD download."/>
+                       help="index-for-model-sequences.txt from the WildCARD archive. Extract card-variants.tar.bz2 and decompress index-for-model-sequences.txt.gz from inside it to obtain this plain-text file."/>
                 <param name="wildcard_version"
                        type="text"
                        value=""
                        optional="true"
                        label="WildCARD version string"
-                       help="Version of the WildCARD data being loaded, e.g. 4.0.0.">
+                       help="Version of the WildCARD data being loaded, e.g. 4.0.0. Find the version number in the WildCARD release notes at https://card.mcmaster.ca/download — it corresponds to the card-variants.tar.bz2 archive you downloaded.">
                     <validator type="regex" message="Version should be digits and dots only, e.g. 4.0.0">[0-9.]*</validator>
                 </param>
             </when>

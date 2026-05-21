@@ -269,8 +269,11 @@ Resistance Database (CARD).
 - **Input sequences** — FASTA file of nucleotide contigs or translated protein
   sequences. gzip-compressed FASTA is accepted.
 - **CARD database** — Select a pre-installed CARD release (provided by your
-  Galaxy administrator) or supply files from your history. Download the latest
-  release from https://card.mcmaster.ca/download.
+  Galaxy administrator) or supply files from your history. To use history files:
+  download ``card-data.tar.bz2`` from https://card.mcmaster.ca/download, extract
+  ``card.json`` from the archive, and optionally run
+  ``rgi card_annotation -i card.json`` to generate the annotation FASTA (only
+  needed when also enabling WildCARD variants).
 - **Annotation model type** — Controls which annotation FASTA is loaded.
   *Homolog models only* is sufficient for standard AMR gene identification.
   *All model types* loads the extended annotation database.
@@ -282,8 +285,8 @@ Resistance Database (CARD).
 **Input type**
 
 - *Contig* (default) — nucleotide sequences. RGI calls PRODIGAL or PYRODIGAL
-  to predict open reading frames before alignment. ORF finder and parallelism
-  options appear when this type is selected.
+  to predict open reading frames before alignment. ORF finder options appear
+  when this type is selected.
 - *Protein* — translated amino acid sequences. ORF prediction is skipped and
   sequences are aligned directly against CARD protein models.
 
@@ -316,7 +319,14 @@ When a WildCARD database is loaded above, RGI main automatically searches
 in silico predicted allelic variants in addition to canonical CARD models.
 WildCARD captures resistance gene diversity not yet represented in canonical
 CARD, improving detection of novel or divergent variants. No additional flag
-is required — simply provide the WildCARD database files to enable it.
+is required once the database is loaded above.
+
+To prepare WildCARD files for history upload: download ``card-variants.tar.bz2``
+from https://card.mcmaster.ca/download, extract and decompress all ``.gz`` files
+inside the archive, then run
+``rgi wildcard_annotation --input_directory <dir> --version <version> --card_json card.json``.
+The version string (e.g. ``4.0.0``) must be supplied manually — check the
+WildCARD release notes at https://card.mcmaster.ca/download for the correct value.
 
 -----
 
