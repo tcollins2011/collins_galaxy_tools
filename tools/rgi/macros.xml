@@ -6,6 +6,7 @@
     <xml name="requirements">
         <requirements>
             <requirement type="package" version="@TOOL_VERSION@">rgi</requirement>
+            <container type="docker">quay.io/biocontainers/rgi:6.0.5--pyh05cac1d_0</container>
         </requirements>
     </xml>
 
