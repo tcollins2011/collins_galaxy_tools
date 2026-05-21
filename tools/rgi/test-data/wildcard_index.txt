@@ -1,0 +1,2 @@
+prevalence_sequence_id	model_id	aro_term	aro_accession	detection_model	col5	col6	col7	col8	percent_identity	col10	amr_gene_family	resistance_mechanism	drug_class	ncbi_accession	species_name	data_type	rgi_criteria
+10687	783	NDM-1	ARO:3000589	protein_homolog_model	.	.	.	.	99.64	.	Beta-lactamases	Inhibitor_resistance	Beta-lactams	FN396876.1	Escherichia_coli	ncbi_contig	Strict

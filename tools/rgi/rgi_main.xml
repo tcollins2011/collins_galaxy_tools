@@ -20,12 +20,10 @@
             -d '$data_type'
             #if str($input_options.input_type) == "contig"
                 -g '$input_options.orf_finder'
-                $input_options.split_prodigal_jobs
             #end if
             $hit_inclusion.include_loose
             $hit_inclusion.include_nudge
             $hit_inclusion.low_quality
-            $include_wildcard
             --local
             --clean
     ]]></command>
@@ -59,13 +57,6 @@
                     <option value="PRODIGAL" selected="true">PRODIGAL</option>
                     <option value="PYRODIGAL">PYRODIGAL (faster)</option>
                 </param>
-                <param argument="--split_prodigal_jobs"
-                       type="boolean"
-                       truevalue="--split_prodigal_jobs"
-                       falsevalue=""
-                       checked="false"
-                       label="Split Prodigal jobs"
-                       help="Run ORF prediction in parallel, one job per contig. Reduces runtime for assemblies with many contigs when multiple CPU cores are available."/>
             </when>
             <when value="protein"/>
         </conditional>
@@ -89,14 +80,6 @@
             <option value="plasmid">Plasmid</option>
             <option value="chromosome">Chromosome</option>
         </param>
-
-        <param argument="--include_wildcard"
-               type="boolean"
-               truevalue="--include_wildcard"
-               falsevalue=""
-               checked="false"
-               label="Include wildcard variants (WildCARD)"
-               help="Also search against in silico predicted AMR gene variants from the WildCARD database. Requires a WildCARD database to be loaded above and the CARD annotation FASTA to be provided."/>
 
         <section name="hit_inclusion" title="Hit inclusion options" expanded="false">
             <param argument="--include_loose"
@@ -206,7 +189,41 @@
                 </assert_contents>
             </output>
         </test>
-        <!-- Test 3: protein mode -->
+        <!-- Test 3: contig mode, BLAST, WildCARD from history -->
+        <test expect_num_outputs="2">
+            <param name="input_sequence" value="test_input.fasta"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_json" value="card_minimal.json"/>
+                <conditional name="card_annot">
+                    <param name="annotation_model" value="homolog"/>
+                </conditional>
+            </conditional>
+            <conditional name="wildcard_source">
+                <param name="source" value="history"/>
+                <conditional name="wildcard_annot">
+                    <param name="wildcard_annotation_model" value="homolog"/>
+                    <param name="wildcard_annotation" value="wildcard_annotation_homolog.fasta"/>
+                </conditional>
+                <param name="wildcard_index" value="wildcard_index.txt"/>
+                <param name="wildcard_version" value="4.0.0"/>
+            </conditional>
+            <conditional name="input_options">
+                <param name="input_type" value="contig"/>
+            </conditional>
+            <param name="alignment_tool" value="BLAST"/>
+            <output name="output_txt">
+                <assert_contents>
+                    <has_text text="Best_Hit_ARO"/>
+                </assert_contents>
+            </output>
+            <output name="output_json">
+                <assert_contents>
+                    <has_text text="type_match"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test 4: protein mode -->
         <test expect_num_outputs="2">
             <param name="input_sequence" value="test_input_protein.fasta"/>
             <conditional name="card_source">
@@ -295,11 +312,11 @@ behaviour. Select the most specific option that applies:
 
 **WildCARD variants**
 
-Enable *Include wildcard variants* to also search in silico predicted allelic
-variants from the WildCARD database. WildCARD captures resistance gene
-diversity not yet represented in canonical CARD, improving detection of novel
-or divergent variants. Requires a WildCARD database to be loaded above and the
-CARD annotation FASTA to be provided.
+When a WildCARD database is loaded above, RGI main automatically searches
+in silico predicted allelic variants in addition to canonical CARD models.
+WildCARD captures resistance gene diversity not yet represented in canonical
+CARD, improving detection of novel or divergent variants. No additional flag
+is required — simply provide the WildCARD database files to enable it.
 
 -----
 

@@ -16,7 +16,7 @@
 #              wildcard_database_v4.0.0_all.fasta  (all model types)
 #              index-for-model-sequences.txt
 #
-# This table is used only by rgi bwt. Select a WildCARD entry to enable
+# This table is used only by both rgi bwt and main. Select a WildCARD entry to enable
 # --include_wildcard alignment. Use wildcard_annotation_all_models when also
 # using --include_other_models.
 #

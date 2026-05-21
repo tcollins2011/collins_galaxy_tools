@@ -8,7 +8,7 @@
     </macros>
     <expand macro="requirements"/>
 
-    <command detect_errors="aggressive"><![CDATA[
+    <command detect_errors="exit_code"><![CDATA[
         mkdir -p staging &&
         rgi load @CMD_CARD_LOAD_ARGS@ @CMD_WILDCARD_LOAD_ARGS@ --local &&
         rgi bwt
@@ -38,13 +38,13 @@
         <param argument="-1"
                name="read_one"
                type="data"
-               format="fastqsanger,fastqsanger.gz"
+               format="fastqsanger,fastqsanger.gz,fastq,fastq.gz"
                label="Read 1 (or single-end reads)"
                help="Quality-trimmed FASTQ reads. For single-end sequencing, provide only this file."/>
         <param argument="-2"
                name="read_two"
                type="data"
-               format="fastqsanger,fastqsanger.gz"
+               format="fastqsanger,fastqsanger.gz,fastq,fastq.gz"
                optional="true"
                label="Read 2 (paired-end, optional)"
                help="Reverse reads for paired-end sequencing. Leave empty for single-end."/>
@@ -188,6 +188,36 @@
             <output name="gene_mapping_txt">
                 <assert_contents>
                     <has_text text="ARO Term"/>
+                </assert_contents>
+            </output>
+        </test>
+        <!-- Test 3: paired-end, kma, WildCARD from history -->
+        <test expect_num_outputs="6">
+            <param name="read_one" value="test_reads_1.fastq.gz"/>
+            <param name="read_two" value="test_reads_2.fastq.gz"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_json" value="card_minimal.json"/>
+                <conditional name="card_annot">
+                    <param name="annotation_model" value="homolog"/>
+                    <param name="card_annotation" value="card_annotation_homolog.fasta"/>
+                </conditional>
+            </conditional>
+            <conditional name="wildcard_source">
+                <param name="source" value="history"/>
+                <conditional name="wildcard_annot">
+                    <param name="wildcard_annotation_model" value="homolog"/>
+                    <param name="wildcard_annotation" value="wildcard_annotation_homolog.fasta"/>
+                </conditional>
+                <param name="wildcard_index" value="wildcard_index.txt"/>
+                <param name="wildcard_version" value="4.0.0"/>
+            </conditional>
+            <param name="aligner" value="kma"/>
+            <param name="include_wildcard" value="true"/>
+            <param name="include_other_models" value="false"/>
+            <output name="allele_mapping_txt">
+                <assert_contents>
+                    <has_text text="Reference Sequence"/>
                 </assert_contents>
             </output>
         </test>

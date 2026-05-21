@@ -57,7 +57,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="CARD annotation FASTA — homolog models"
-                               help="card_database_v*.fasta, created with rgi card_annotation. Required for rgi bwt alignment and when using Include wildcard variants."/>
+                               help="card_database_v*.fasta, created with rgi card_annotation. REQUIRED when using RGI bwt — omitting this causes a silent failure. Also required when using Include wildcard variants."/>
                     </when>
                     <when value="all">
                         <param name="card_annotation_all_models"
@@ -65,7 +65,7 @@
                                format="fasta,fasta.gz"
                                optional="true"
                                label="CARD annotation FASTA — all models"
-                               help="card_database_v*_all.fasta, created with rgi card_annotation. Required when using --include_other_models."/>
+                               help="card_database_v*_all.fasta, created with rgi card_annotation. REQUIRED when using RGI bwt with Include other model types — omitting this causes a silent failure."/>
                     </when>
                 </conditional>
             </when>
