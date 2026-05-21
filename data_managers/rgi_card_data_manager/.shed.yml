@@ -11,4 +11,4 @@ name: data_manager_rgi_card
 owner: tcollins
 homepage_url: https://github.com/arpcard/rgi
 remote_repository_url: https://github.com/tcollins2011/collins_galaxy_tools/tree/main/data_managers/rgi_card_data_manager
-type: repository_suite_definition
+type: unrestricted
