@@ -50,7 +50,10 @@ def main():
         card_extract_dir = os.path.join(tmpdir, 'card')
         os.makedirs(card_extract_dir)
         with tarfile.open(card_archive, 'r:bz2') as tf:
-            tf.extractall(card_extract_dir, filter='data')
+            try:
+                tf.extractall(card_extract_dir, filter='data')
+            except TypeError:
+                tf.extractall(card_extract_dir)
 
         card_json_path = find_card_json(card_extract_dir)
         if card_json_path is None:
@@ -67,7 +70,10 @@ def main():
         extract_dir = os.path.join(tmpdir, 'wildcard')
         os.makedirs(extract_dir)
         with tarfile.open(wildcard_archive, 'r:bz2') as tf:
-            tf.extractall(extract_dir, filter='data')
+            try:
+                tf.extractall(extract_dir, filter='data')
+            except TypeError:
+                tf.extractall(extract_dir)
 
         # All files in the archive are gzip-compressed (.fasta.gz, .txt.gz).
         # rgi wildcard_annotation matches filenames without .gz and opens them as

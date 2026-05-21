@@ -42,7 +42,10 @@ def main():
 
         print('Extracting archive...', file=sys.stderr)
         with tarfile.open(archive, 'r:bz2') as tf:
-            tf.extractall(tmpdir, filter='data')
+            try:
+                tf.extractall(tmpdir, filter='data')
+            except TypeError:
+                tf.extractall(tmpdir)
 
         card_json_src = find_card_json(tmpdir)
         if card_json_src is None:
