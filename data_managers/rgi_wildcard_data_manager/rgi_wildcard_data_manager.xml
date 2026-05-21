@@ -12,9 +12,17 @@
     <command detect_errors="exit_code"><![CDATA[
         python '$__tool_directory__/rgi_wildcard_data_manager.py'
             --out '$out_file'
-            --wildcard-url '$wildcard_url'
+            #if str($wildcard_url) == '__local_test__'
+                --wildcard-url '$__tool_directory__/test-data/card-variants.tar.bz2'
+            #else
+                --wildcard-url '$wildcard_url'
+            #end if
             --version '$wildcard_version'
-            --card-url '$card_url'
+            #if str($card_url) == '__local_test__'
+                --card-url '$__tool_directory__/test-data/card-data.tar.bz2'
+            #else
+                --card-url '$card_url'
+            #end if
             --data-path '$__data_manager_data_path__'
     ]]></command>
 
@@ -45,13 +53,15 @@
 
     <tests>
         <test>
-            <param name="wildcard_url" value="https://github.com/tcollins2011/collins_galaxy_tools/raw/main/data_managers/rgi_wildcard_data_manager/test-data/card-variants.tar.bz2"/>
+            <param name="wildcard_url" value="__local_test__"/>
             <param name="wildcard_version" value="4.0.1"/>
-            <param name="card_url" value="https://github.com/tcollins2011/collins_galaxy_tools/raw/main/data_managers/rgi_wildcard_data_manager/test-data/card-data.tar.bz2"/>
+            <param name="card_url" value="__local_test__"/>
             <output name="out_file">
                 <assert_contents>
                     <has_text text="rgi_wildcard"/>
                     <has_text text="wildcard_annotation"/>
+                    <has_text text="4.0.1"/>
+                    <not_has_text text="null"/>
                 </assert_contents>
             </output>
         </test>
@@ -88,5 +98,6 @@ all-models FASTA are stored alongside the index file.
 
     <citations>
         <citation type="doi">10.1093/nar/gkz935</citation>
+        <citation type="doi">10.1093/nar/gkac920</citation>
     </citations>
 </tool>

@@ -10,12 +10,14 @@ import tempfile
 import urllib.request
 
 
-def download(url, dest):
-    urllib.request.urlretrieve(url, dest)
+def get_archive(url, dest):
+    if url.startswith(('http://', 'https://', 'ftp://')):
+        urllib.request.urlretrieve(url, dest)
+    else:
+        shutil.copy2(url, dest)
 
 
 def find_card_json(root):
-    """Locate card.json in root or one level deep."""
     candidate = os.path.join(root, 'card.json')
     if os.path.exists(candidate):
         return candidate
@@ -28,23 +30,23 @@ def find_card_json(root):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out', required=True,
-                        help='Path to Galaxy data manager output JSON')
-    parser.add_argument('--wildcard-url', required=True, dest='wildcard_url',
-                        help='URL to card-variants.tar.bz2')
-    parser.add_argument('--version', required=True,
-                        help='WildCARD version string, e.g. 4.0.0')
-    parser.add_argument('--card-url', required=True, dest='card_url',
-                        help='URL to card-data.tar.bz2 (provides card.json for rgi wildcard_annotation)')
-    parser.add_argument('--data-path', required=True, dest='data_path',
-                        help='Galaxy data manager data path')
+    parser.add_argument('--out', required=True)
+    parser.add_argument('--wildcard-url', required=True, dest='wildcard_url')
+    parser.add_argument('--version', required=True)
+    parser.add_argument('--card-url', required=True, dest='card_url')
+    parser.add_argument('--data-path', required=True, dest='data_path')
     args = parser.parse_args()
 
+    os.makedirs(args.data_path, exist_ok=True)
+
     with tempfile.TemporaryDirectory() as tmpdir:
-        # Download and extract CARD archive to get card.json
         card_archive = os.path.join(tmpdir, 'card-data.tar.bz2')
-        print(f'Downloading CARD data from {args.card_url}', file=sys.stderr)
-        download(args.card_url, card_archive)
+        wildcard_archive = os.path.join(tmpdir, 'card-variants.tar.bz2')
+
+        print(f'Fetching CARD data from {args.card_url}', file=sys.stderr)
+        get_archive(args.card_url, card_archive)
+        print(f'Fetching WildCARD data from {args.wildcard_url}', file=sys.stderr)
+        get_archive(args.wildcard_url, wildcard_archive)
 
         print('Extracting CARD archive...', file=sys.stderr)
         card_extract_dir = os.path.join(tmpdir, 'card')
@@ -61,11 +63,6 @@ def main():
             sys.exit(1)
         print(f'Found card.json at {card_json_path}', file=sys.stderr)
 
-        # Download and extract WildCARD archive
-        wildcard_archive = os.path.join(tmpdir, 'card-variants.tar.bz2')
-        print(f'Downloading WildCARD data from {args.wildcard_url}', file=sys.stderr)
-        download(args.wildcard_url, wildcard_archive)
-
         print('Extracting WildCARD archive...', file=sys.stderr)
         extract_dir = os.path.join(tmpdir, 'wildcard')
         os.makedirs(extract_dir)
@@ -75,15 +72,12 @@ def main():
             except TypeError:
                 tf.extractall(extract_dir)
 
-        # All files in the archive are gzip-compressed (.fasta.gz, .txt.gz).
-        # rgi wildcard_annotation matches filenames without .gz and opens them as
-        # plain text, so decompress everything before calling rgi.
         print('Decompressing archive files...', file=sys.stderr)
         for gz_path in sorted(os.listdir(extract_dir)):
             if not gz_path.endswith('.gz'):
                 continue
             gz_full = os.path.join(extract_dir, gz_path)
-            plain_full = gz_full[:-3]  # strip .gz
+            plain_full = gz_full[:-3]
             with gzip.open(gz_full, 'rb') as f_in, open(plain_full, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
             os.remove(gz_full)
@@ -94,7 +88,6 @@ def main():
                   file=sys.stderr)
             sys.exit(1)
 
-        # rgi wildcard_annotation writes annotation FASTAs to cwd
         print('Running rgi wildcard_annotation...', file=sys.stderr)
         subprocess.run(
             [
@@ -126,13 +119,11 @@ def main():
         shutil.copy2(index_src, index_dst)
         print(f'Database stored at {dest_dir}', file=sys.stderr)
 
-    value = 'wildcard_{}'.format(args.version.replace('.', '_'))
-    name = f'WildCARD {args.version}'
     data_manager_dict = {
         'data_tables': {
             'rgi_wildcard': [{
-                'value': value,
-                'name': name,
+                'value': 'wildcard_{}'.format(args.version.replace('.', '_')),
+                'name': f'WildCARD {args.version}',
                 'wildcard_annotation': annotation_dst,
                 'wildcard_annotation_all_models': annotation_all_dst,
                 'wildcard_index': index_dst,

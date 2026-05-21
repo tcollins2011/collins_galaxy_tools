@@ -9,12 +9,14 @@ import tempfile
 import urllib.request
 
 
-def download(url, dest):
-    urllib.request.urlretrieve(url, dest)
+def get_archive(url, dest):
+    if url.startswith(('http://', 'https://', 'ftp://')):
+        urllib.request.urlretrieve(url, dest)
+    else:
+        shutil.copy2(url, dest)
 
 
 def find_card_json(root):
-    """Locate card.json in root or one level deep."""
     candidate = os.path.join(root, 'card.json')
     if os.path.exists(candidate):
         return candidate
@@ -27,18 +29,17 @@ def find_card_json(root):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out', required=True,
-                        help='Path to Galaxy data manager output JSON')
-    parser.add_argument('--url', required=True,
-                        help='URL to card-data.tar.bz2')
-    parser.add_argument('--data-path', required=True, dest='data_path',
-                        help='Galaxy data manager data path')
+    parser.add_argument('--out', required=True)
+    parser.add_argument('--url', required=True)
+    parser.add_argument('--data-path', required=True, dest='data_path')
     args = parser.parse_args()
+
+    os.makedirs(args.data_path, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         archive = os.path.join(tmpdir, 'card-data.tar.bz2')
-        print(f'Downloading CARD data from {args.url}', file=sys.stderr)
-        download(args.url, archive)
+        print(f'Fetching CARD data from {args.url}', file=sys.stderr)
+        get_archive(args.url, archive)
 
         print('Extracting archive...', file=sys.stderr)
         with tarfile.open(archive, 'r:bz2') as tf:
@@ -57,10 +58,10 @@ def main():
         version = card_data['_version']
         print(f'CARD version: {version}', file=sys.stderr)
 
-        # rgi card_annotation writes output FASTAs to cwd
         work_dir = os.path.join(tmpdir, 'annotation')
         os.makedirs(work_dir)
         shutil.copy2(card_json_src, os.path.join(work_dir, 'card.json'))
+
         print('Running rgi card_annotation...', file=sys.stderr)
         subprocess.run(
             ['rgi', 'card_annotation', '-i', 'card.json'],
@@ -87,13 +88,11 @@ def main():
         shutil.copy2(annotation_all_src, annotation_all_dst)
         print(f'Database stored at {dest_dir}', file=sys.stderr)
 
-    value = 'card_{}'.format(version.replace('.', '_'))
-    name = f'CARD {version}'
     data_manager_dict = {
         'data_tables': {
             'rgi_card': [{
-                'value': value,
-                'name': name,
+                'value': 'card_{}'.format(version.replace('.', '_')),
+                'name': f'CARD {version}',
                 'card_json': card_json_dst,
                 'card_annotation': annotation_dst,
                 'card_annotation_all_models': annotation_all_dst,

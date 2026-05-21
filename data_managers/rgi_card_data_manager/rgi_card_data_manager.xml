@@ -12,7 +12,11 @@
     <command detect_errors="exit_code"><![CDATA[
         python '$__tool_directory__/rgi_card_data_manager.py'
             --out '$out_file'
-            --url '$card_url'
+            #if str($card_url) == '__local_test__'
+                --url '$__tool_directory__/test-data/card-data.tar.bz2'
+            #else
+                --url '$card_url'
+            #end if
             --data-path '$__data_manager_data_path__'
     ]]></command>
 
@@ -30,11 +34,13 @@
 
     <tests>
         <test>
-            <param name="card_url" value="https://github.com/tcollins2011/collins_galaxy_tools/raw/main/data_managers/rgi_card_data_manager/test-data/card-data.tar.bz2"/>
+            <param name="card_url" value="__local_test__"/>
             <output name="out_file">
                 <assert_contents>
                     <has_text text="rgi_card"/>
                     <has_text text="card_json"/>
+                    <has_text text="4.0.1"/>
+                    <not_has_text text="null"/>
                 </assert_contents>
             </output>
         </test>
@@ -65,10 +71,11 @@ entry is required.
 
 Both the homolog-models-only FASTA (``card_database_v*.fasta``) and the
 all-models FASTA (``card_database_v*_all.fasta``) are stored. Users can
-select the annotation type when running the RGI tools.
+select the annotation type when running the RGI tool suite.
     ]]></help>
 
     <citations>
         <citation type="doi">10.1093/nar/gkz935</citation>
+        <citation type="doi">10.1093/nar/gkac920</citation>
     </citations>
 </tool>
