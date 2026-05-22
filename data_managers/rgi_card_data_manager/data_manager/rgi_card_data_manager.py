@@ -29,12 +29,15 @@ def find_card_json(root):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out', required=True)
-    parser.add_argument('--url', required=True)
-    parser.add_argument('--data-path', required=True, dest='data_path')
+    parser.add_argument('output_file',
+                        help='Galaxy data manager output JSON file')
+    parser.add_argument('--url', required=True,
+                        help='URL or local path to card-data.tar.bz2')
     args = parser.parse_args()
 
-    os.makedirs(args.data_path, exist_ok=True)
+    params = json.load(open(args.output_file))
+    target_directory = params['output_data'][0]['extra_files_path']
+    os.makedirs(target_directory, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         archive = os.path.join(tmpdir, 'card-data.tar.bz2')
@@ -76,17 +79,14 @@ def main():
                 print(f'ERROR: expected output not found: {path}', file=sys.stderr)
                 sys.exit(1)
 
-        dest_dir = os.path.join(args.data_path, 'rgi_card', version)
-        os.makedirs(dest_dir, exist_ok=True)
-
-        card_json_dst = os.path.join(dest_dir, 'card.json')
-        annotation_dst = os.path.join(dest_dir, f'card_database_v{version}.fasta')
-        annotation_all_dst = os.path.join(dest_dir, f'card_database_v{version}_all.fasta')
+        card_json_dst = os.path.join(target_directory, 'card.json')
+        annotation_dst = os.path.join(target_directory, f'card_database_v{version}.fasta')
+        annotation_all_dst = os.path.join(target_directory, f'card_database_v{version}_all.fasta')
 
         shutil.copy2(card_json_src, card_json_dst)
         shutil.copy2(annotation_src, annotation_dst)
         shutil.copy2(annotation_all_src, annotation_all_dst)
-        print(f'Database stored at {dest_dir}', file=sys.stderr)
+        print(f'Database stored at {target_directory}', file=sys.stderr)
 
     data_manager_dict = {
         'data_tables': {
@@ -100,7 +100,7 @@ def main():
             }]
         }
     }
-    with open(args.out, 'w') as f:
+    with open(args.output_file, 'w') as f:
         json.dump(data_manager_dict, f, sort_keys=True)
     print('Done.', file=sys.stderr)
 
