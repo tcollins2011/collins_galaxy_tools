@@ -1,0 +1,8 @@
+# This file lists CARD database installations for use with RGI tools.
+# Managed by the RGI: Install CARD database data manager.
+#
+# Columns (tab-separated):
+# value	name	card_json	card_annotation	card_annotation_all_models	card_version
+#
+# Example:
+# card_4_0_1	CARD 4.0.1	/srv/galaxy/tool-data/rgi_card/4.0.1/card.json	/srv/galaxy/tool-data/rgi_card/4.0.1/card_database_v4.0.1.fasta	/srv/galaxy/tool-data/rgi_card/4.0.1/card_database_v4.0.1_all.fasta	4.0.1

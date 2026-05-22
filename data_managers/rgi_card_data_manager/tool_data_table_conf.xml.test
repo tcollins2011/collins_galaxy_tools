@@ -1,0 +1,6 @@
+<tables>
+    <table name="rgi_card" comment_char="#">
+        <columns>value, name, card_json, card_annotation, card_annotation_all_models, card_version</columns>
+        <file path="${__HERE__}/test-data/rgi_card.loc"/>
+    </table>
+</tables>

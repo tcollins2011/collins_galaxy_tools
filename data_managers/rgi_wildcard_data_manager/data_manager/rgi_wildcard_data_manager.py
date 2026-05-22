@@ -30,14 +30,19 @@ def find_card_json(root):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--out', required=True)
-    parser.add_argument('--wildcard-url', required=True, dest='wildcard_url')
-    parser.add_argument('--version', required=True)
-    parser.add_argument('--card-url', required=True, dest='card_url')
-    parser.add_argument('--data-path', required=True, dest='data_path')
+    parser.add_argument('output_file',
+                        help='Galaxy data manager output JSON file')
+    parser.add_argument('--wildcard-url', required=True, dest='wildcard_url',
+                        help='URL or local path to card-variants.tar.bz2')
+    parser.add_argument('--version', required=True,
+                        help='WildCARD version string, e.g. 4.0.0')
+    parser.add_argument('--card-url', required=True, dest='card_url',
+                        help='URL or local path to card-data.tar.bz2')
     args = parser.parse_args()
 
-    os.makedirs(args.data_path, exist_ok=True)
+    params = json.load(open(args.output_file))
+    target_directory = params['output_data'][0]['extra_files_path']
+    os.makedirs(target_directory, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
         card_archive = os.path.join(tmpdir, 'card-data.tar.bz2')
@@ -107,17 +112,14 @@ def main():
                 print(f'ERROR: expected output not found: {path}', file=sys.stderr)
                 sys.exit(1)
 
-        dest_dir = os.path.join(args.data_path, 'rgi_wildcard', args.version)
-        os.makedirs(dest_dir, exist_ok=True)
-
-        annotation_dst = os.path.join(dest_dir, f'wildcard_database_v{args.version}.fasta')
-        annotation_all_dst = os.path.join(dest_dir, f'wildcard_database_v{args.version}_all.fasta')
-        index_dst = os.path.join(dest_dir, 'index-for-model-sequences.txt')
+        annotation_dst = os.path.join(target_directory, f'wildcard_database_v{args.version}.fasta')
+        annotation_all_dst = os.path.join(target_directory, f'wildcard_database_v{args.version}_all.fasta')
+        index_dst = os.path.join(target_directory, 'index-for-model-sequences.txt')
 
         shutil.copy2(annotation_src, annotation_dst)
         shutil.copy2(annotation_all_src, annotation_all_dst)
         shutil.copy2(index_src, index_dst)
-        print(f'Database stored at {dest_dir}', file=sys.stderr)
+        print(f'Database stored at {target_directory}', file=sys.stderr)
 
     data_manager_dict = {
         'data_tables': {
@@ -131,7 +133,7 @@ def main():
             }]
         }
     }
-    with open(args.out, 'w') as f:
+    with open(args.output_file, 'w') as f:
         json.dump(data_manager_dict, f, sort_keys=True)
     print('Done.', file=sys.stderr)
 

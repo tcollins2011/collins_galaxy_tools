@@ -1,6 +1,6 @@
 <tool id="rgi_card_data_manager"
       name="RGI: Install CARD database"
-      version="6.0.5+galaxy0"
+      version="6.0.5+galaxy1"
       tool_type="manage_data"
       profile="25.0">
     <description>download and index a CARD release for use with RGI tools</description>
@@ -11,21 +11,37 @@
 
     <command detect_errors="exit_code"><![CDATA[
         python '$__tool_directory__/rgi_card_data_manager.py'
-            --out '$out_file'
-            #if str($card_url) == '__local_test__'
-                --url '$__tool_directory__/test-data/card-data.tar.bz2'
+            '$out_file'
+            #if str($card_source.source) == 'url'
+                --url '$card_source.card_url'
             #else
-                --url '$card_url'
+                --url '$card_source.card_archive'
             #end if
-            --data-path '$__data_manager_data_path__'
     ]]></command>
 
     <inputs>
-        <param name="card_url"
-               type="text"
-               value="https://card.mcmaster.ca/latest/data"
-               label="CARD download URL"
-               help="URL to the CARD data archive (card-data.tar.bz2). The default fetches the latest release. For a specific version use the versioned URL from https://card.mcmaster.ca/download."/>
+        <conditional name="card_source">
+            <param name="source"
+                   type="select"
+                   label="CARD archive source">
+                <option value="url" selected="true">Download from URL</option>
+                <option value="history">Use archive from history</option>
+            </param>
+            <when value="url">
+                <param name="card_url"
+                       type="text"
+                       value="https://card.mcmaster.ca/latest/data"
+                       label="CARD download URL"
+                       help="URL to the CARD data archive (card-data.tar.bz2). The default fetches the latest release. For a specific version use the versioned URL from https://card.mcmaster.ca/download."/>
+            </when>
+            <when value="history">
+                <param name="card_archive"
+                       type="data"
+                       format="tar.bz2"
+                       label="CARD archive (card-data.tar.bz2)"
+                       help="A previously downloaded card-data.tar.bz2 from https://card.mcmaster.ca/download."/>
+            </when>
+        </conditional>
     </inputs>
 
     <outputs>
@@ -34,7 +50,10 @@
 
     <tests>
         <test>
-            <param name="card_url" value="__local_test__"/>
+            <conditional name="card_source">
+                <param name="source" value="history"/>
+                <param name="card_archive" value="card-data.tar.bz2" ftype="tar.bz2"/>
+            </conditional>
             <output name="out_file">
                 <assert_contents>
                     <has_text text="rgi_card"/>
