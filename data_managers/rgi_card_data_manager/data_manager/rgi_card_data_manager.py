@@ -80,8 +80,8 @@ def main():
                 sys.exit(1)
 
         card_json_dst = os.path.join(target_directory, 'card.json')
-        annotation_dst = os.path.join(target_directory, f'card_database_v{version}.fasta')
-        annotation_all_dst = os.path.join(target_directory, f'card_database_v{version}_all.fasta')
+        annotation_dst = os.path.join(target_directory, 'card_annotation.fasta')
+        annotation_all_dst = os.path.join(target_directory, 'card_annotation_all.fasta')
 
         shutil.copy2(card_json_src, card_json_dst)
         shutil.copy2(annotation_src, annotation_dst)
@@ -93,9 +93,9 @@ def main():
             'rgi_card': [{
                 'value': 'card_{}'.format(version.replace('.', '_')),
                 'name': f'CARD {version}',
-                'card_json': card_json_dst,
-                'card_annotation': annotation_dst,
-                'card_annotation_all_models': annotation_all_dst,
+                'card_json': target_directory,
+                'card_annotation': '',
+                'card_annotation_all_models': '',
                 'card_version': version,
             }]
         }

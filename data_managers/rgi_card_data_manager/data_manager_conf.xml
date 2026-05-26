@@ -4,12 +4,25 @@
                   id="rgi_card_data_manager">
         <data_table name="rgi_card">
             <output>
-                <column name="value" />
-                <column name="name" />
-                <column name="card_json" />
-                <column name="card_annotation" />
-                <column name="card_annotation_all_models" />
-                <column name="card_version" />
+                <column name="value"/>
+                <column name="name"/>
+                <column name="card_version"/>
+                <column name="card_json" output_ref="out_file">
+                    <move type="directory">
+                        <source>${card_json}</source>
+                        <target base="${GALAXY_DATA_MANAGER_DATA_PATH}">rgi_card/${value}</target>
+                    </move>
+                    <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card.json</value_translation>
+                    <value_translation type="function">abspath</value_translation>
+                </column>
+                <column name="card_annotation">
+                    <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card_annotation.fasta</value_translation>
+                    <value_translation type="function">abspath</value_translation>
+                </column>
+                <column name="card_annotation_all_models">
+                    <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card_annotation_all.fasta</value_translation>
+                    <value_translation type="function">abspath</value_translation>
+                </column>
             </output>
         </data_table>
     </data_manager>
