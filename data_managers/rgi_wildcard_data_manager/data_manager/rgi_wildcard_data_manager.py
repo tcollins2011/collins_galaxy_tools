@@ -112,8 +112,8 @@ def main():
                 print(f'ERROR: expected output not found: {path}', file=sys.stderr)
                 sys.exit(1)
 
-        annotation_dst = os.path.join(target_directory, f'wildcard_database_v{args.version}.fasta')
-        annotation_all_dst = os.path.join(target_directory, f'wildcard_database_v{args.version}_all.fasta')
+        annotation_dst = os.path.join(target_directory, 'wildcard_annotation.fasta')
+        annotation_all_dst = os.path.join(target_directory, 'wildcard_annotation_all.fasta')
         index_dst = os.path.join(target_directory, 'index-for-model-sequences.txt')
 
         shutil.copy2(annotation_src, annotation_dst)
@@ -126,9 +126,9 @@ def main():
             'rgi_wildcard': [{
                 'value': 'wildcard_{}'.format(args.version.replace('.', '_')),
                 'name': f'WildCARD {args.version}',
-                'wildcard_annotation': annotation_dst,
-                'wildcard_annotation_all_models': annotation_all_dst,
-                'wildcard_index': index_dst,
+                'wildcard_annotation': target_directory,
+                'wildcard_annotation_all_models': '',
+                'wildcard_index': '',
                 'wildcard_version': args.version,
             }]
         }
