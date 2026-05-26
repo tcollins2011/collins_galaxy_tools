@@ -1,6 +1,6 @@
 <tool id="rgi_wildcard_data_manager"
       name="RGI: Install WildCARD database"
-      version="6.0.5+galaxy1"
+      version="6.0.5+galaxy2"
       tool_type="manage_data"
       profile="25.0">
     <description>download and index a WildCARD release for use with RGI tools</description>

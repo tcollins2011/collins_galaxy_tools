@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.1"?>
 <data_managers>
     <data_manager tool_file="data_manager/rgi_wildcard_data_manager.xml"
                   id="rgi_wildcard_data_manager">

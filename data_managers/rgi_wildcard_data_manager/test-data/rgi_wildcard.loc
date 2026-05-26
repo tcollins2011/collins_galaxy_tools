@@ -7,3 +7,4 @@
 # Example:
 # wildcard_4_0_1	WildCARD 4.0.1	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1_all.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/index-for-model-sequences.txt	4.0.1
 wildcard_4_0_1	WildCARD 4.0.1	/tmp/tmpu0wo4ud1/job_working_directory/000/3/outputs/dataset_cb305506-0176-44ea-8d82-80364e875c8f_files/wildcard_database_v4.0.1.fasta	/tmp/tmpu0wo4ud1/job_working_directory/000/3/outputs/dataset_cb305506-0176-44ea-8d82-80364e875c8f_files/wildcard_database_v4.0.1_all.fasta	/tmp/tmpu0wo4ud1/job_working_directory/000/3/outputs/dataset_cb305506-0176-44ea-8d82-80364e875c8f_files/index-for-model-sequences.txt	4.0.1
+wildcard_4_0_1	WildCARD 4.0.1	/tmp/tmpijohyvbm/job_working_directory/000/3/outputs/dataset_550423e7-f872-4973-a608-d1edcf414367_files			4.0.1
