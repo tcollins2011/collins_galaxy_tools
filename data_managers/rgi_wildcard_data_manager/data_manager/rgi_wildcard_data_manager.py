@@ -126,9 +126,9 @@ def main():
             'rgi_wildcard': [{
                 'value': 'wildcard_{}'.format(args.version.replace('.', '_')),
                 'name': f'WildCARD {args.version}',
-                'wildcard_annotation': target_directory,
-                'wildcard_annotation_all_models': '',
-                'wildcard_index': '',
+                'wildcard_annotation': annotation_dst,
+                'wildcard_annotation_all_models': annotation_all_dst,
+                'wildcard_index': index_dst,
                 'wildcard_version': args.version,
             }]
         }

@@ -9,17 +9,16 @@
                 <column name="wildcard_version"/>
                 <column name="wildcard_annotation" output_ref="out_file">
                     <move type="directory">
-                        <source>${wildcard_annotation}</source>
                         <target base="${GALAXY_DATA_MANAGER_DATA_PATH}">rgi_wildcard/${value}</target>
                     </move>
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_wildcard/${value}/wildcard_annotation.fasta</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
-                <column name="wildcard_annotation_all_models">
+                <column name="wildcard_annotation_all_models" output_ref="out_file">
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_wildcard/${value}/wildcard_annotation_all.fasta</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
-                <column name="wildcard_index">
+                <column name="wildcard_index" output_ref="out_file">
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_wildcard/${value}/index-for-model-sequences.txt</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
