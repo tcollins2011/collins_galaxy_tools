@@ -93,9 +93,9 @@ def main():
             'rgi_card': [{
                 'value': 'card_{}'.format(version.replace('.', '_')),
                 'name': f'CARD {version}',
-                'card_json': target_directory,
-                'card_annotation': '',
-                'card_annotation_all_models': '',
+                'card_json': card_json_dst,
+                'card_annotation': annotation_dst,
+                'card_annotation_all_models': annotation_all_dst,
                 'card_version': version,
             }]
         }

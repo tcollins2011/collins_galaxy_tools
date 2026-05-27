@@ -9,17 +9,16 @@
                 <column name="card_version"/>
                 <column name="card_json" output_ref="out_file">
                     <move type="directory">
-                        <source>${card_json}</source>
                         <target base="${GALAXY_DATA_MANAGER_DATA_PATH}">rgi_card/${value}</target>
                     </move>
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card.json</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
-                <column name="card_annotation">
+                <column name="card_annotation" output_ref="out_file">
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card_annotation.fasta</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
-                <column name="card_annotation_all_models">
+                <column name="card_annotation_all_models" output_ref="out_file">
                     <value_translation>${GALAXY_DATA_MANAGER_DATA_PATH}/rgi_card/${value}/card_annotation_all.fasta</value_translation>
                     <value_translation type="function">abspath</value_translation>
                 </column>
