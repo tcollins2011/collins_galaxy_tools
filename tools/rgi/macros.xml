@@ -88,7 +88,7 @@
                 <param name="cached_wildcard"
                        type="select"
                        label="WildCARD database"
-                       help="Select a pre-installed WildCARD release. Contact your Galaxy administrator if none are listed.">
+                       help="Select a pre-installed WildCARD release and ensure the Card version matches. Contact your Galaxy administrator if none are listed.">
                     <options from_data_table="rgi_wildcard">
                         <filter type="sort_by" column="1"/>
                         <validator type="no_options"

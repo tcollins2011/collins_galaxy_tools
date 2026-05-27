@@ -7,6 +7,7 @@
                 <column name="value"/>
                 <column name="name"/>
                 <column name="wildcard_version"/>
+                <column name="card_version"/>
                 <column name="wildcard_annotation" output_ref="out_file">
                     <move type="directory">
                         <target base="${GALAXY_DATA_MANAGER_DATA_PATH}">rgi_wildcard/${value}</target>

@@ -1,6 +1,6 @@
 <tool id="rgi_wildcard_data_manager"
       name="RGI: Install WildCARD database"
-      version="6.0.5+galaxy2"
+      version="6.0.5+galaxy3"
       tool_type="manage_data"
       profile="25.0">
     <description>download and index a WildCARD release for use with RGI tools</description>
@@ -18,11 +18,8 @@
                 --wildcard-url '$wildcard_source.wildcard_archive'
             #end if
             --version '$wildcard_version'
-            #if str($card_source.source) == 'url'
-                --card-url '$card_source.card_url'
-            #else
-                --card-url '$card_source.card_archive'
-            #end if
+            --card-json '$card_db.fields.card_json'
+            --card-version '$card_db.fields.card_version'
     ]]></command>
 
     <inputs>
@@ -56,29 +53,16 @@
             <validator type="regex"
                        message="Version must be digits and dots only, e.g. 4.0.0">[0-9]+\.[0-9]+\.[0-9]+</validator>
         </param>
-        <conditional name="card_source">
-            <param name="source"
-                   type="select"
-                   label="CARD archive source"
-                   help="card.json is required for the annotation step. No separate CARD database installation is needed.">
-                <option value="url" selected="true">Download from URL</option>
-                <option value="history">Use archive from history</option>
-            </param>
-            <when value="url">
-                <param name="card_url"
-                       type="text"
-                       value="https://card.mcmaster.ca/latest/data"
-                       label="CARD download URL"
-                       help="URL to the CARD data archive (card-data.tar.bz2), used to obtain card.json for the annotation step. The default fetches the latest release."/>
-            </when>
-            <when value="history">
-                <param name="card_archive"
-                       type="data"
-                       format="tar.bz2"
-                       label="CARD archive (card-data.tar.bz2)"
-                       help="A previously downloaded card-data.tar.bz2 from https://card.mcmaster.ca/download, used to obtain card.json for the annotation step."/>
-            </when>
-        </conditional>
+        <param name="card_db"
+               type="select"
+               label="CARD database"
+               help="Select the installed CARD release to use for annotation. The CARD version must match the WildCARD version you are installing.">
+            <options from_data_table="rgi_card">
+                <filter type="sort_by" column="1"/>
+                <validator type="no_options"
+                           message="No CARD databases are installed. Run the RGI: Install CARD database data manager first."/>
+            </options>
+        </param>
     </inputs>
 
     <outputs>
@@ -92,15 +76,13 @@
                 <param name="wildcard_archive" value="card-variants.tar.bz2" ftype="tar.bz2"/>
             </conditional>
             <param name="wildcard_version" value="4.0.1"/>
-            <conditional name="card_source">
-                <param name="source" value="history"/>
-                <param name="card_archive" value="card-data.tar.bz2" ftype="tar.bz2"/>
-            </conditional>
+            <param name="card_db" value="card_4_0_1"/>
             <output name="out_file">
                 <assert_contents>
                     <has_text text="rgi_wildcard"/>
                     <has_text text="wildcard_annotation"/>
                     <has_text text="4.0.1"/>
+                    <has_text text="card_version"/>
                     <not_has_text text="null"/>
                 </assert_contents>
             </output>
@@ -116,8 +98,9 @@ annotation FASTAs and index file required by the RGI tools. The database
 is registered in the ``rgi_wildcard`` data table so users can select it
 from the WildCARD database dropdown in **RGI main** and **RGI bwt**.
 
-No prior CARD installation is required — this data manager downloads
-``card.json`` automatically as part of the annotation step.
+A CARD database must be installed first using the **RGI: Install CARD
+database** data manager. The CARD version should match the WildCARD
+version being installed to ensure correct variant-to-model mapping.
 
 -----
 

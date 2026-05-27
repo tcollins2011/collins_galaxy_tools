@@ -2,7 +2,7 @@
 # Managed by the RGI: Install WildCARD database data manager.
 #
 # Columns (tab-separated):
-# value	name	wildcard_annotation	wildcard_annotation_all_models	wildcard_index	wildcard_version
+# value	name	wildcard_annotation	wildcard_annotation_all_models	wildcard_index	wildcard_version	card_version
 #
 # Example:
-# wildcard_4_0_1	WildCARD 4.0.1	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1_all.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/index-for-model-sequences.txt	4.0.1
+# wildcard_4_0_1	WildCARD 4.0.1 (CARD 4.0.1)	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/wildcard_database_v4.0.1_all.fasta	/srv/galaxy/tool-data/rgi_wildcard/4.0.1/index-for-model-sequences.txt	4.0.1	4.0.1

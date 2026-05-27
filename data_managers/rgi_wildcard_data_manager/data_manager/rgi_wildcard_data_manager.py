@@ -17,16 +17,6 @@ def get_archive(url, dest):
         shutil.copy2(url, dest)
 
 
-def find_card_json(root):
-    candidate = os.path.join(root, 'card.json')
-    if os.path.exists(candidate):
-        return candidate
-    for entry in os.listdir(root):
-        candidate = os.path.join(root, entry, 'card.json')
-        if os.path.exists(candidate):
-            return candidate
-    return None
-
 
 def main():
     parser = argparse.ArgumentParser()
@@ -36,8 +26,10 @@ def main():
                         help='URL or local path to card-variants.tar.bz2')
     parser.add_argument('--version', required=True,
                         help='WildCARD version string, e.g. 4.0.0')
-    parser.add_argument('--card-url', required=True, dest='card_url',
-                        help='URL or local path to card-data.tar.bz2')
+    parser.add_argument('--card-json', required=True, dest='card_json',
+                        help='Path to card.json from an installed CARD database')
+    parser.add_argument('--card-version', required=True, dest='card_version',
+                        help='CARD version string used to build this WildCARD entry')
     args = parser.parse_args()
 
     params = json.load(open(args.output_file))
@@ -45,28 +37,10 @@ def main():
     os.makedirs(target_directory, exist_ok=True)
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        card_archive = os.path.join(tmpdir, 'card-data.tar.bz2')
         wildcard_archive = os.path.join(tmpdir, 'card-variants.tar.bz2')
 
-        print(f'Fetching CARD data from {args.card_url}', file=sys.stderr)
-        get_archive(args.card_url, card_archive)
         print(f'Fetching WildCARD data from {args.wildcard_url}', file=sys.stderr)
         get_archive(args.wildcard_url, wildcard_archive)
-
-        print('Extracting CARD archive...', file=sys.stderr)
-        card_extract_dir = os.path.join(tmpdir, 'card')
-        os.makedirs(card_extract_dir)
-        with tarfile.open(card_archive, 'r:bz2') as tf:
-            try:
-                tf.extractall(card_extract_dir, filter='data')
-            except TypeError:
-                tf.extractall(card_extract_dir)
-
-        card_json_path = find_card_json(card_extract_dir)
-        if card_json_path is None:
-            print('ERROR: card.json not found in CARD archive', file=sys.stderr)
-            sys.exit(1)
-        print(f'Found card.json at {card_json_path}', file=sys.stderr)
 
         print('Extracting WildCARD archive...', file=sys.stderr)
         extract_dir = os.path.join(tmpdir, 'wildcard')
@@ -99,7 +73,7 @@ def main():
                 'rgi', 'wildcard_annotation',
                 '--input_directory', extract_dir,
                 '--version', args.version,
-                '--card_json', card_json_path,
+                '--card_json', args.card_json,
             ],
             cwd=tmpdir,
             check=True,
@@ -125,11 +99,12 @@ def main():
         'data_tables': {
             'rgi_wildcard': [{
                 'value': 'wildcard_{}'.format(args.version.replace('.', '_')),
-                'name': f'WildCARD {args.version}',
+                'name': f'WildCARD {args.version} (CARD {args.card_version})',
                 'wildcard_annotation': annotation_dst,
                 'wildcard_annotation_all_models': annotation_all_dst,
                 'wildcard_index': index_dst,
                 'wildcard_version': args.version,
+                'card_version': args.card_version,
             }]
         }
     }
