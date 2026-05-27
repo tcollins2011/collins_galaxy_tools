@@ -1,6 +1,6 @@
 <tool id="rgi_card_data_manager"
       name="RGI: Install CARD database"
-      version="6.0.5+galaxy2"
+      version="6.0.5+galaxy3"
       tool_type="manage_data"
       profile="25.0">
     <description>download and index a CARD release for use with RGI tools</description>
