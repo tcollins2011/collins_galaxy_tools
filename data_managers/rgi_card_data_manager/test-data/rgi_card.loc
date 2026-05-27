@@ -7,3 +7,4 @@
 # Example:
 # card_4_0_1	CARD 4.0.1	/srv/galaxy/tool-data/rgi_card/4.0.1/card.json	/srv/galaxy/tool-data/rgi_card/4.0.1/card_database_v4.0.1.fasta	/srv/galaxy/tool-data/rgi_card/4.0.1/card_database_v4.0.1_all.fasta	4.0.1
 card_4_0_1	CARD 4.0.1	/tmp/tmphu0bb_pg/job_working_directory/000/2/outputs/dataset_9d231389-4107-4c25-8925-4a0d3283f2f7_files/card.json	/tmp/tmphu0bb_pg/job_working_directory/000/2/outputs/dataset_9d231389-4107-4c25-8925-4a0d3283f2f7_files/card_database_v4.0.1.fasta	/tmp/tmphu0bb_pg/job_working_directory/000/2/outputs/dataset_9d231389-4107-4c25-8925-4a0d3283f2f7_files/card_database_v4.0.1_all.fasta	4.0.1
+card_4_0_1	CARD 4.0.1	/tmp/tmp8d2mrrxe/galaxy-dev/tool-data/rgi_card/card_4_0_1/card.json	/tmp/tmp8d2mrrxe/galaxy-dev/tool-data/rgi_card/card_4_0_1/card_annotation.fasta	/tmp/tmp8d2mrrxe/galaxy-dev/tool-data/rgi_card/card_4_0_1/card_annotation_all.fasta	4.0.1
