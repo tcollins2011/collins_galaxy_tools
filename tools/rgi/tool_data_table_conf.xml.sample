@@ -25,9 +25,10 @@
                                             created with: rgi wildcard_annotation ...)
            wildcard_index                 - absolute path to index-for-model-sequences.txt
            wildcard_version               - version string of the wildcard data, e.g. 4.0.0
+           card_version                   - version string of the CARD database used to build this entry
     -->
     <table name="rgi_wildcard" comment_char="#">
-        <columns>value, name, wildcard_annotation, wildcard_annotation_all_models, wildcard_index, wildcard_version</columns>
+        <columns>value, name, wildcard_annotation, wildcard_annotation_all_models, wildcard_index, wildcard_version, card_version</columns>
         <file path="tool-data/rgi_wildcard.loc"/>
     </table>
 </tables>
